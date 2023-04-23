@@ -1,6 +1,8 @@
 package com.example.brt.config;
 
 import com.example.commonthings.model.CdrDto;
+import com.example.commonthings.model.CdrPlusDto;
+import com.example.commonthings.model.ResultBillingDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongSerializer;
@@ -15,6 +17,7 @@ import org.springframework.kafka.support.converter.StringJsonMessageConverter;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -48,6 +51,18 @@ public class KafkaProducerConfig {
     }
 
     @Bean
+    public ProducerFactory<Long, CdrPlusDto> producerListFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
+    public KafkaTemplate<Long, CdrPlusDto> producerListTemplate() {
+        KafkaTemplate<Long, CdrPlusDto> template = new KafkaTemplate<>(producerListFactory());
+        template.setMessageConverter(new StringJsonMessageConverter());
+        return template;
+    }
+
+    @Bean
     public ProducerFactory<Long, String> producerStringFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
@@ -55,6 +70,18 @@ public class KafkaProducerConfig {
     @Bean
     public KafkaTemplate<Long, String> kafkaStringTemplate() {
         KafkaTemplate<Long, String> template = new KafkaTemplate<>(producerStringFactory());
+        template.setMessageConverter(new StringJsonMessageConverter());
+        return template;
+    }
+
+    @Bean
+    public ProducerFactory<Long, ResultBillingDto> producerResultBillingDtoFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
+    public KafkaTemplate<Long, ResultBillingDto> kafkaResultBillingDtoTemplate() {
+        KafkaTemplate<Long, ResultBillingDto> template = new KafkaTemplate<>(producerResultBillingDtoFactory());
         template.setMessageConverter(new StringJsonMessageConverter());
         return template;
     }

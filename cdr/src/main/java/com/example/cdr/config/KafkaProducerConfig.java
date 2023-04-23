@@ -48,6 +48,18 @@ public class KafkaProducerConfig {
         return template;
     }
 
+    @Bean
+    public ProducerFactory<Long, String> producerStringFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
+    public KafkaTemplate<Long, String> kafkaStringTemplate() {
+        KafkaTemplate<Long, String> template = new KafkaTemplate<>(producerStringFactory());
+        template.setMessageConverter(new StringJsonMessageConverter());
+        return template;
+    }
+
 //    @Bean
 //    public ProducerFactory<Long, List<CdrDto>> producerCdrsFactory() {
 //        return new DefaultKafkaProducerFactory<>(producerConfigs());

@@ -1,6 +1,7 @@
 package com.example.commonthings.model;
 
 
+import com.example.commonthings.entity.TypeCall;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,16 +14,13 @@ public class CdrDto {
    LocalDateTime endTime;
    TypeCall typeCall;
 
-   public CdrDto(String phoneNumber, LocalDateTime startTime, LocalDateTime endTime, String typeCall) {
+//   TODO генерация typeCall и других сущностей хромает
+   public CdrDto(String phoneNumber, LocalDateTime startTime, LocalDateTime endTime, TypeCall typeCall) {
       this.phoneNumber = phoneNumber;
       this.startTime = startTime;
       this.endTime = endTime;
-      if(typeCall.equals("01")){
-         this.typeCall = TypeCall.OUTGOING;
-      }
-      else{
-         this.typeCall = TypeCall.INCOMING;
-      }
+      this.typeCall = typeCall;
+
    }
 
 }

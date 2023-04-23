@@ -1,6 +1,7 @@
 package com.example.cdr.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,28 +19,23 @@ import java.util.List;
 import java.util.Random;
 
 @Service
-//@AllArgsConstructor
+@AllArgsConstructor
+@Slf4j
 public class GeneratorCdrServiceImpl implements GeneratorCdrService{
 
     private final Faker faker;
     private final Random random;
-//    @Value("${generator.options.directoryPath}")
+    @Value("${generator.options.directoryPath}")
     private String filename;
-//    @Value("${generator.options.amountPhones}")
+    @Value("${generator.options.amountPhones}")
     private int amountPhone;
     private static final String stringForCdr ="%s,%s,%s,%s\n";
 
-    @Autowired
-    public GeneratorCdrServiceImpl(Faker faker, Random random, @Value("${generator.options.directoryPath}") String filename, @Value("${generator.options.amountPhones}") int amountPhone) {
-        this.faker = faker;
-        this.random = random;
-        this.filename = filename;
-        this.amountPhone = amountPhone;
-    }
+    private final CdrService cdrService;
 
     @Override
-//    @KafkaListener(id = "cdr", topics = {"sendToBrt"}, containerFactory = "singleFactory")
-    public void generateCdrTxt(){
+    @KafkaListener(id = "cdr", topics = {"createCdr"}, containerFactory = "singleFactory")
+    public void generateCdrTxt(String message){
         File file = new File("Cdr-files/%s.txt", filename);
         StringBuilder builder = new StringBuilder();
             try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file))){
@@ -53,6 +49,8 @@ public class GeneratorCdrServiceImpl implements GeneratorCdrService{
                 ex.getStackTrace();
             }
 
+        log.info(message);
+        cdrService.SendToBrt();
     }
     public void generateString(StringBuilder builder, BufferedWriter bufferedWriter){
         String phoneNumber = generatePhoneNumber();
@@ -66,19 +64,6 @@ public class GeneratorCdrServiceImpl implements GeneratorCdrService{
         }
 
     }
-
-
-//    public List<CdrDto> generateCdrDtos(){
-//        List<CdrDto> cdrDtos = new ArrayList<>();
-//        int randomNumber = random.nextInt(40);
-//        String phoneNumber = generatePhoneNumber();
-//        for(int i = 0; i <= randomNumber; i++){
-//            LocalDateTime now = LocalDateTime.now();
-//                CdrDto cdrDto = new CdrDto(phoneNumber, now, generateDate(now), generateTypeCall());
-//                cdrDtos.add(cdrDto);
-//        }
-//        return cdrDtos;
-//    }
 
     public String generatePhoneNumber(){
         String phoneNumber = "791291964" + faker.numerify("##");

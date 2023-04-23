@@ -1,9 +1,6 @@
 package com.example.commonthings.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -13,7 +10,6 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -24,4 +20,14 @@ public class Client {
     @JoinColumn(name = "TARIFF_ID")
     private Tariff tariff;
     private BigDecimal balance;
+    private double totalCallTime;
+    private String monetaryUnit;
+
+    public Client(String phoneNumber, Tariff tariff, BigDecimal balance, double totalCallTime, String monetaryUnit) {
+        this.phoneNumber = phoneNumber;
+        this.tariff = tariff;
+        this.balance = balance;
+        this.totalCallTime = totalCallTime;
+        this.monetaryUnit = monetaryUnit;
+    }
 }

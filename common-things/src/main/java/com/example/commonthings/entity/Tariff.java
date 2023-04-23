@@ -24,25 +24,12 @@ public class Tariff {
     private String name;
 
     private BigDecimal fixedPrice;
-
-//    private BigDecimal priceForMinute;
-
     private Integer minuteLimit;
 
     private BigDecimal IncomeMinuteCostBeforeLimit;
     private BigDecimal IncomeMinuteCostAfterLimit;
     private BigDecimal OutcomeMinuteCostBeforeLimit;
     private BigDecimal OutcomeMinuteCostAfterLimit;
-
-
-//    private Boolean haveLimit;
-//
-//    private Boolean outgoingPaid;
-//    private Boolean incomingPaid;
-//
-//    private  Boolean limitPaid;
-//
-//    private BigDecimal priceAfterLimit;
 
 
 

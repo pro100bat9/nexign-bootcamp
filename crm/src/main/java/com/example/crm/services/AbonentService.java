@@ -40,7 +40,13 @@ public class AbonentService {
 
     public Client create(String phoneNumber, String tariffId, String balance) {
         Tariff tariff = tariffService.findByIndex(tariffId);
-        Client client = new Client(phoneNumber, tariff, new BigDecimal(balance), 0.0, "rub");
+        Client client = Client.builder()
+                .balance(new BigDecimal(balance))
+                .phoneNumber(phoneNumber)
+                .tariff(tariff)
+                .monetaryUnit("rub")
+                .totalCallTime(0.0)
+                .build();
         return managerService.createClient(client);
     }
 

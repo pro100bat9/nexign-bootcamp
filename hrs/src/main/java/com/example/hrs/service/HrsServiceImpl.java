@@ -21,8 +21,6 @@ public class HrsServiceImpl implements HrsService{
     private final ClientRepository clientRepository;
     private final KafkaTemplate<Long, Call> kafkaTemplate;
 
-
-//TODO написать метод который будет дергать кафку
     @KafkaListener(id = "brt", topics = {"sendToHrs"}, containerFactory = "singleFactory")
     public void calculationBalance(CdrPlusDto cdrPlusDto){
         double duration = calculateDuration(cdrPlusDto.getCdrDto().getStartTime(),

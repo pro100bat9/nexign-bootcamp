@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -22,12 +24,4 @@ public class Client {
     private BigDecimal balance;
     private double totalCallTime;
     private String monetaryUnit;
-
-    public Client(String phoneNumber, Tariff tariff, BigDecimal balance, double totalCallTime, String monetaryUnit) {
-        this.phoneNumber = phoneNumber;
-        this.tariff = tariff;
-        this.balance = balance;
-        this.totalCallTime = totalCallTime;
-        this.monetaryUnit = monetaryUnit;
-    }
 }

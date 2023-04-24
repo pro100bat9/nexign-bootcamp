@@ -1,15 +1,13 @@
 package com.example.brt.config;
 
-import com.example.commonthings.model.AbstractDto;
+import com.example.commonthings.entity.Call;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
@@ -27,8 +25,8 @@ public class KafkaConsumerConfig {
     private String kafkaGroupId;
 
     @Bean
-    public KafkaListenerContainerFactory<?> batchFactory() {
-        ConcurrentKafkaListenerContainerFactory<Long, AbstractDto> factory =
+    public ConcurrentKafkaListenerContainerFactory<Long, Call> batchFactory() {
+        ConcurrentKafkaListenerContainerFactory<Long, Call> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         factory.setBatchListener(true);
@@ -37,23 +35,18 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public KafkaListenerContainerFactory<?> singleFactory() {
-        ConcurrentKafkaListenerContainerFactory<Long, AbstractDto> factory =
+    public ConcurrentKafkaListenerContainerFactory<Long, Call> singleFactory() {
+        ConcurrentKafkaListenerContainerFactory<Long, Call> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         factory.setBatchListener(false);
-        factory.setMessageConverter(new StringJsonMessageConverter());
+        factory.setMessageConverter(converter());
         return factory;
     }
 
     @Bean
-    public ConsumerFactory<Long, AbstractDto> consumerFactory() {
+    public ConsumerFactory<Long, Call> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfigs());
-    }
-
-    @Bean
-    public KafkaListenerContainerFactory<?> kafkaListenerContainerFactory() {
-        return new ConcurrentKafkaListenerContainerFactory<>();
     }
 
     @Bean

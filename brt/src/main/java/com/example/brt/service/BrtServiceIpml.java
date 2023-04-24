@@ -124,13 +124,4 @@ public class BrtServiceIpml implements BrtService{
             }
             return "Income";
     }
-
-//    @Scheduled(initialDelay = 10000, fixedDelay = 5000)
-//    public void sendMessageToCdr() {
-//            String payload = "privet";
-//            kafkaTemplate.send("test", payload);
-//    }
-
-
-
 }

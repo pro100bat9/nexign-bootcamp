@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ClientGenerator implements ClientGeneratorService{
+public class ClientGenerator{
     private final GeneratorCdrService generatorCdrService;
     private final GeneratorBalance generatorBalanceService;
     private final TariffGenerator tariffGenerator;

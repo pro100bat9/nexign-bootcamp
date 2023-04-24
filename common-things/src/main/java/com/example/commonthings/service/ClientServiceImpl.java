@@ -60,7 +60,6 @@ public class ClientServiceImpl implements ClientService{
 
     @Override
     public List<Client> getAll() {
-
         return clientRepository.findAll();
     }
 

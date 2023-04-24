@@ -14,7 +14,6 @@ public class CdrDto {
    LocalDateTime endTime;
    TypeCall typeCall;
 
-//   TODO генерация typeCall и других сущностей хромает
    public CdrDto(String phoneNumber, LocalDateTime startTime, LocalDateTime endTime, TypeCall typeCall) {
       this.phoneNumber = phoneNumber;
       this.startTime = startTime;

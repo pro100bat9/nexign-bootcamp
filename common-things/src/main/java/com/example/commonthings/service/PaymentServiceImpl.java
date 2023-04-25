@@ -3,8 +3,10 @@ package com.example.commonthings.service;
 import com.example.commonthings.entity.Payment;
 import com.example.commonthings.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
+@Service
 public class PaymentServiceImpl implements PaymentService{
     private final PaymentRepository paymentRepository;
 

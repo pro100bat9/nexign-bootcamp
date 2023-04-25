@@ -2,6 +2,7 @@ package com.example.commonthings.entity;
 
 
 import lombok.*;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

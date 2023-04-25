@@ -1,11 +1,12 @@
 package com.example.crm.controllers;
 
-import com.example.crm.services.AbonentService;
+import com.example.crm.services.AbonentServiceImpl;
 import com.example.crm.wrappers.request.AbonentPay;
 import com.example.crm.wrappers.response.AbonentPayResponse;
 import com.example.crm.wrappers.response.AbonentReport;
 import com.example.crm.wrappers.response.CallReport;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,12 @@ import java.time.Duration;
 @AllArgsConstructor
 public class Abonent {
 
-    private final AbonentService abonentService;
+    private final AbonentServiceImpl abonentService;
+
+//    @Autowired
+//    public Abonent(AbonentServiceImpl abonentService) {
+//        this.abonentService = abonentService;
+//    }
 
     @PostMapping("/pay")
     public ResponseEntity<?> pay(@RequestBody AbonentPay data) {

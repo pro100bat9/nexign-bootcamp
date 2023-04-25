@@ -50,7 +50,7 @@ public class KafkaProduceConfig {
     @Bean
     public NewTopic topic() {
         return TopicBuilder
-                .name("crm-topic")
+                .name("sendToBrtBilling")
                 .partitions(5)
                 .replicas(1)
                 .build();

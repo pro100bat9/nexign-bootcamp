@@ -1,7 +1,7 @@
 package com.example.crm.controllers;
 
 
-import com.example.crm.services.AbonentService;
+import com.example.crm.services.AbonentServiceImpl;
 import com.example.crm.wrappers.request.BillingRequest;
 import com.example.crm.wrappers.request.ChangeTariff;
 import com.example.crm.wrappers.request.CreateAbonent;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class Manager {
 
-    private final AbonentService abonentService;
+    private final AbonentServiceImpl abonentService;
 
     @PatchMapping("/changeTariff")
     public ResponseEntity<?> changeTariff(@RequestBody ChangeTariff data) {

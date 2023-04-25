@@ -90,7 +90,7 @@ public class BrtServiceIpml implements BrtService{
             kafkaStringTemplate.send("createCdr", message);
         }
 
-    @KafkaListener(id = "brt", topics = {"sendToBrt"}, containerFactory = "singleFactory")
+    @KafkaListener(id = "brtSecond", topics = {"sendToBrt"}, containerFactory = "singleFactory")
     public void convertToDto() throws FileNotFoundException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         List<CdrDto> cdrDtoList = new ArrayList<>();
@@ -112,7 +112,7 @@ public class BrtServiceIpml implements BrtService{
         authorizeClient(cdrDtoList);
     }
 
-    @KafkaListener(id = "brt", topics = {"sendToBrtBilling"}, containerFactory = "singleFactory")
+    @KafkaListener(id = "brtThird", topics = {"sendToBrtBilling"}, containerFactory = "singleFactory")
     public void billing(){
             sendMessageToCdr();
             log.info("Request sent to cdr");

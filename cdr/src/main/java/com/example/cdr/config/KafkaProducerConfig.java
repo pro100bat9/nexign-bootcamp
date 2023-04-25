@@ -60,21 +60,10 @@ public class KafkaProducerConfig {
         return template;
     }
 
-//    @Bean
-//    public ProducerFactory<Long, List<CdrDto>> producerCdrsFactory() {
-//        return new DefaultKafkaProducerFactory<>(producerConfigs());
-//    }
-//    @Bean
-//    public KafkaTemplate<Long, List<CdrDto>> kafkaTemplateList() {
-//        KafkaTemplate<Long, List<CdrDto>> template = new KafkaTemplate<>(producerCdrsFactory());
-//        template.setMessageConverter(new StringJsonMessageConverter());
-//        return template;
-//    }
-
     @Bean
     public NewTopic topic() {
         return TopicBuilder
-                .name("cdr-topic")
+                .name("sendToBrt")
                 .partitions(5)
                 .replicas(1)
                 .build();

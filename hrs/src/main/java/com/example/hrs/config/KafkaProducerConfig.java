@@ -36,13 +36,13 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<Long, Call> producerStringFactory() {
+    public ProducerFactory<Long, Call> producerCallFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
-    public KafkaTemplate<Long, Call> kafkaStringTemplate() {
-        KafkaTemplate<Long, Call> template = new KafkaTemplate<>(producerStringFactory());
+    public KafkaTemplate<Long, Call> kafkaCallTemplate() {
+        KafkaTemplate<Long, Call> template = new KafkaTemplate<>(producerCallFactory());
         template.setMessageConverter(new StringJsonMessageConverter());
         return template;
     }
@@ -50,7 +50,7 @@ public class KafkaProducerConfig {
     @Bean
     public NewTopic topic() {
         return TopicBuilder
-                .name("hrs-topic")
+                .name("sendCallToBrt")
                 .partitions(5)
                 .replicas(1)
                 .build();

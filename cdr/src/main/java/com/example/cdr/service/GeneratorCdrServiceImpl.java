@@ -19,19 +19,27 @@ import java.util.List;
 import java.util.Random;
 
 @Service
-@AllArgsConstructor
 @Slf4j
 public class GeneratorCdrServiceImpl implements GeneratorCdrService{
 
     private final Faker faker;
     private final Random random;
-    @Value("${generator.options.directoryPath}")
     private String filename;
-    @Value("${generator.options.amountPhones}")
     private int amountPhone;
     private static final String stringForCdr ="%s,%s,%s,%s\n";
 
     private final CdrService cdrService;
+
+
+    @Autowired
+    public GeneratorCdrServiceImpl(Faker faker, Random random, @Value("${generator.options.directoryPath}") String filename,
+                                   @Value("${generator.options.amountPhones}") int amountPhone, CdrService cdrService) {
+        this.faker = faker;
+        this.random = random;
+        this.filename = filename;
+        this.amountPhone = amountPhone;
+        this.cdrService = cdrService;
+    }
 
     @Override
     @KafkaListener(id = "cdr", topics = {"createCdr"}, containerFactory = "singleFactory")
@@ -40,7 +48,7 @@ public class GeneratorCdrServiceImpl implements GeneratorCdrService{
         StringBuilder builder = new StringBuilder();
             try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file))){
                 for(int i = 0; amountPhone <= i; i++){
-                    generateString(builder, bufferedWriter);
+                    generateString(builder);
                 }
                 bufferedWriter.write(builder.toString());
 
@@ -52,7 +60,7 @@ public class GeneratorCdrServiceImpl implements GeneratorCdrService{
         log.info(message);
         cdrService.SendToBrt();
     }
-    public void generateString(StringBuilder builder, BufferedWriter bufferedWriter){
+    public void generateString(StringBuilder builder){
         String phoneNumber = generatePhoneNumber();
         int randomNumber = random.nextInt(40);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");

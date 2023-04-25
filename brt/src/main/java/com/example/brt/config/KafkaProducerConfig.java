@@ -89,7 +89,25 @@ public class KafkaProducerConfig {
     @Bean
     public NewTopic topic() {
         return TopicBuilder
-                .name("brt-topic")
+                .name("createCdr")
+                .partitions(5)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic topic1() {
+        return TopicBuilder
+                .name("sendToHrs")
+                .partitions(5)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic topic2() {
+        return TopicBuilder
+                .name("sendToCrmResultBillingDto")
                 .partitions(5)
                 .replicas(1)
                 .build();

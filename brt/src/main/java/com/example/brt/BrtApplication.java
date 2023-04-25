@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 @SpringBootApplication
-@EnableScheduling
+//@EnableScheduling
 @EnableKafka
 @ComponentScan(basePackages = {"com.example.commonthings", "com.example.brt"})
 public class BrtApplication {

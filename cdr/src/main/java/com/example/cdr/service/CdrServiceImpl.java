@@ -1,18 +1,14 @@
 package com.example.cdr.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CdrServiceImpl implements CdrService {
 
     private final KafkaTemplate<Long, String> kafkaTemplate;
-
-    @Autowired
-    public CdrServiceImpl(KafkaTemplate<Long, String> kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
-    }
 
     @Override
     public void SendToBrt(){

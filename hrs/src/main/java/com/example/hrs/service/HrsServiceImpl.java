@@ -5,6 +5,7 @@ import com.example.commonthings.entity.Client;
 import com.example.commonthings.model.CdrPlusDto;
 import com.example.commonthings.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;

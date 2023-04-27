@@ -1,4 +1,4 @@
-package com.example.cdr.service;
+package com.example.cdr.service.cdrGenerator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;

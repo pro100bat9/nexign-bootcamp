@@ -63,6 +63,18 @@ public class KafkaProducerConfig {
     }
 
     @Bean
+    public ProducerFactory<Long, List<CdrDto>> producerCdrDtoFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
+    public KafkaTemplate<Long, List<CdrDto>> producerCdrDtoTemplate() {
+        KafkaTemplate<Long, List<CdrDto>> template = new KafkaTemplate<>(producerCdrDtoFactory());
+        template.setMessageConverter(new StringJsonMessageConverter());
+        return template;
+    }
+
+    @Bean
     public ProducerFactory<Long, String> producerStringFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
@@ -108,6 +120,15 @@ public class KafkaProducerConfig {
     public NewTopic topic2() {
         return TopicBuilder
                 .name("sendToCrmResultBillingDto")
+                .partitions(5)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic topic3() {
+        return TopicBuilder
+                .name("generateClientInDB")
                 .partitions(5)
                 .replicas(1)
                 .build();

@@ -2,10 +2,11 @@ package com.example.hrs.service;
 
 import com.example.commonthings.entity.Call;
 import com.example.commonthings.entity.Client;
+import com.example.commonthings.exception.ClientNotFoundException;
 import com.example.commonthings.model.CdrPlusDto;
 import com.example.commonthings.repository.ClientRepository;
+import com.example.commonthings.service.ClientService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class HrsServiceImpl implements HrsService{
 
     private final ClientRepository clientRepository;
     private final KafkaTemplate<Long, Call> kafkaTemplate;
+    private final ClientService clientService;
 
     @KafkaListener(id = "brt", topics = {"sendToHrs"}, containerFactory = "singleFactory")
     public void calculationBalance(CdrPlusDto cdrPlusDto){
@@ -39,7 +41,7 @@ public class HrsServiceImpl implements HrsService{
 
     public BigDecimal calculateCost(CdrPlusDto cdrPlusDto, double duration){
         BigDecimal result = BigDecimal.ZERO;
-        Client client = clientRepository.findClientByPhoneNumber(cdrPlusDto.getCdrDto().getPhoneNumber());
+        Client client = clientService.findClientByPhoneNumber(cdrPlusDto.getCdrDto().getPhoneNumber());
         if(cdrPlusDto.getCdrDto().getTypeCall().getCode().equals("02")){
             result = calculatePriceForLimitIncome(cdrPlusDto, client, duration);
         }

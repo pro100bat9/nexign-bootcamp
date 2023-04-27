@@ -1,4 +1,4 @@
-package com.example.cdr.service;
+package com.example.cdr.service.cdrGenerator;
 
 import java.time.LocalDateTime;
 

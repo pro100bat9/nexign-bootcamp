@@ -21,7 +21,6 @@ public class Manager {
     public ResponseEntity<?> changeTariff(@RequestBody ChangeTariff data) {
         var client = abonentService.changeTariff(data.getNumberPhone(),data.getTariff_id());
         return ResponseEntity.ok().body(AbonentChangeTariffResponse.builder()
-                .id(String.valueOf(client.getId()))
                 .numberPhone(client.getNumberPhone())
                 .tariff_id(client.getTariffId())
                 .build());

@@ -9,6 +9,7 @@ import com.example.commonthings.model.ResultBillingDto;
 import com.example.commonthings.service.ClientService;
 import com.example.commonthings.service.ManagerService;
 import com.example.commonthings.service.TariffService;
+import com.example.crm.exception.BillingException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -65,10 +66,11 @@ public class AbonentServiceImpl implements AbonentService{
             } catch (Exception e) {
                 System.out.println(e);
             }
-            return resultBillingDtos;
         }
-//        TODO написать нормальный эксепшен
-        throw new RuntimeException();
+        if(resultBillingDtos == null){
+            throw new BillingException("result equals null");
+        }
+        return resultBillingDtos;
     }
 
     @KafkaListener(id = "crm", topics = {"sendToCrmResultBillingDto"}, containerFactory = "singleFactory")

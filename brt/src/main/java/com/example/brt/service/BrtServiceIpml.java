@@ -36,11 +36,13 @@ public class BrtServiceIpml implements BrtService{
     private final ClientService clientService;
     private final KafkaTemplate<Long, String> kafkaStringTemplate;
     private final KafkaTemplate<Long, CdrPlusDto> kafkaListCdrPlusTemplate;
+    private final KafkaTemplate<Long, List<CdrDto>> kafkaCdrDtoTemplate;
     private final CallService callService;
     private final KafkaTemplate<Long, ResultBillingDto> kafkaResultBillingDtoTemplate;
 
 
 
+        @Override
         public void authorizeClient(List<CdrDto> cdrDtos){
             List<CdrPlusDto> cdrPlusDtos = new ArrayList<>();
             for (CdrDto cdrDto : cdrDtos){
@@ -55,6 +57,7 @@ public class BrtServiceIpml implements BrtService{
             }
         }
 
+        @Override
     @KafkaListener(id = "brt", topics = {"sendCallToBrt"}, containerFactory = "singleFactory")
         public void calculateBalance(Call call){
             Client client = clientService.findClientByPhoneNumber(call.getPhoneNumber());
@@ -65,6 +68,7 @@ public class BrtServiceIpml implements BrtService{
             sendToCrm();
         }
 
+        @Override
         public ResultBillingDto getResultBillingDto(){
             List<Client> clientList = clientService.getAll();
             ResultBillingDto resultBillingDtoList = new ResultBillingDto();
@@ -78,19 +82,22 @@ public class BrtServiceIpml implements BrtService{
             return resultBillingDtoList;
         }
 
+
+    @Override
         public void sendToCrm(){
             ResultBillingDto resultBillingDto = getResultBillingDto();
             kafkaResultBillingDtoTemplate.send("sendToCrmResultBillingDto", resultBillingDto);
             log.info("Result sent to crm");
         }
 
-
+    @Override
         public void sendMessageToCdr(){
             String message = "request to create cdr file received";
             kafkaStringTemplate.send("createCdr", message);
         }
 
     @KafkaListener(id = "brtSecond", topics = {"sendToBrt"}, containerFactory = "singleFactory")
+    @Override
     public void convertToDto() throws FileNotFoundException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         List<CdrDto> cdrDtoList = new ArrayList<>();
@@ -110,12 +117,15 @@ public class BrtServiceIpml implements BrtService{
         }
 
         authorizeClient(cdrDtoList);
+        kafkaCdrDtoTemplate.send("generateClientInDB", cdrDtoList);
     }
 
     @KafkaListener(id = "brtThird", topics = {"sendToBrtBilling"}, containerFactory = "singleFactory")
-    public void billing(){
+    @Override
+    public Boolean billing(){
             sendMessageToCdr();
             log.info("Request sent to cdr");
+            return true;
     }
 
     public String typeCall(String code){

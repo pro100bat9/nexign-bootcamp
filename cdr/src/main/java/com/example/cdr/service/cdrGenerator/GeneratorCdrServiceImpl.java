@@ -1,6 +1,5 @@
-package com.example.cdr.service;
+package com.example.cdr.service.cdrGenerator;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import java.util.Random;
 
 @Service
 @Slf4j
-public class GeneratorCdrServiceImpl implements GeneratorCdrService{
+public class GeneratorCdrServiceImpl implements GeneratorCdrService {
 
     private final Faker faker;
     private final Random random;
@@ -51,7 +50,6 @@ public class GeneratorCdrServiceImpl implements GeneratorCdrService{
                     generateString(builder);
                 }
                 bufferedWriter.write(builder.toString());
-
             }
             catch (IOException ex){
                 ex.getStackTrace();

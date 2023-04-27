@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class ChangeTariffDto {
-    private Long id;
     private String numberPhone;
     private String tariffId;
 

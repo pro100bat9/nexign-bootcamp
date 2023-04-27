@@ -3,6 +3,8 @@ package com.example.commonthings.service;
 import com.example.commonthings.entity.Call;
 import com.example.commonthings.entity.Client;
 import com.example.commonthings.entity.Payment;
+import com.example.commonthings.exception.ClientAlreadyExistException;
+import com.example.commonthings.exception.ClientNotFoundException;
 import com.example.commonthings.model.CallsDetailsDto;
 import com.example.commonthings.model.PaymentDto;
 import com.example.commonthings.repository.ClientRepository;
@@ -21,41 +23,50 @@ public class ClientServiceImpl implements ClientService{
 
     @Override
     public Client createClient(Client client) {
+        if(clientRepository.findClientByPhoneNumber(client.getPhoneNumber()).isPresent()){
+            throw new ClientAlreadyExistException("Client with number phone" + client.getPhoneNumber() + "already exist");
+        }
         return clientRepository.save(client);
     }
 
     @Override
     public Client updateClient(Client client) {
+        if(clientRepository.findClientByPhoneNumber(client.getPhoneNumber()).isEmpty()){
+            throw  new ClientNotFoundException("Client with phone number " + client.getPhoneNumber() + " not found");
+        }
         return clientRepository.save(client);
     }
 
     @Override
     public Client findClientByPhoneNumber(String phoneNumber) {
-        return clientRepository.findClientByPhoneNumber(phoneNumber);
+        return clientRepository.findClientByPhoneNumber(phoneNumber).orElseThrow(
+                () -> new ClientNotFoundException("Client with phone number " + phoneNumber + "not found"));
     }
 
     @Override
     public PaymentDto replenishmentOfTheBalance(PaymentDto payBalanceDto) {
-        Client client = clientRepository.findClientByPhoneNumber(payBalanceDto.getPhoneNumber());
+        var client = clientRepository.findClientByPhoneNumber(payBalanceDto.getPhoneNumber())
+                .orElseThrow(() ->
+                        new ClientNotFoundException("Client with phone number " +
+                                payBalanceDto.getPhoneNumber() + "not found"));
         BigDecimal money = new BigDecimal(payBalanceDto.getMoney());
         BigDecimal newBalance = client.getBalance().add(money);
-        payBalanceDto.setId(client.getId());
         client.setBalance(newBalance);
         clientRepository.save(client);
         payBalanceDto.setMoney(newBalance.toString());
-        Payment payment = new Payment(client.getId(), payBalanceDto.getPhoneNumber(), money);
+        Payment payment = Payment.builder().money(money).numberPhone(payBalanceDto.getPhoneNumber()).build();
         paymentService.create(payment);
         return payBalanceDto;
     }
 
     @Override
     public CallsDetailsDto getDetailsCalls(String phoneNumber) {
-        Client client = clientRepository.findClientByPhoneNumber(phoneNumber);
+        var client = clientRepository.findClientByPhoneNumber(phoneNumber).orElseThrow(
+                () -> new ClientNotFoundException("Client with phone number " + phoneNumber + "not found"));
         List<Call> callList = callService.getCallsByPhoneNumber(phoneNumber);
         BigDecimal totalCost = countTotalPrice(callList);
-       CallsDetailsDto callsDetailsDto = new CallsDetailsDto(client.getId(), phoneNumber,
-               client.getTariff().getIndex(), callList, totalCost.toString(), client.getMonetaryUnit());
-        return callsDetailsDto;
+        return new CallsDetailsDto(client.getId(), phoneNumber,
+                client.getTariff().getIndex(), callList, totalCost.toString(), client.getMonetaryUnit());
     }
 
     @Override

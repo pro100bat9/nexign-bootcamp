@@ -3,14 +3,15 @@ package com.example.commonthings.service;
 import com.example.commonthings.entity.Call;
 import com.example.commonthings.repository.CallRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 @RequiredArgsConstructor
-@Service
-public class CallServiceImpl implements CallService{
+public class CallServiceImpl implements CallService {
     private final CallRepository callRepository;
+
     @Override
     public Call createCall(Call call) {
         return callRepository.save(call);

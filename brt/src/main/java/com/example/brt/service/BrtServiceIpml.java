@@ -3,8 +3,8 @@ package com.example.brt.service;
 import com.example.commonthings.entity.Call;
 import com.example.commonthings.entity.Client;
 import com.example.commonthings.entity.TypeCall;
-import com.example.commonthings.model.CdrPlusDto;
 import com.example.commonthings.model.CdrDto;
+import com.example.commonthings.model.CdrPlusDto;
 import com.example.commonthings.model.NumberPhoneAndBalanceDto;
 import com.example.commonthings.model.ResultBillingDto;
 import com.example.commonthings.service.CallService;
@@ -28,7 +28,7 @@ import java.util.Scanner;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class BrtServiceIpml implements BrtService{
+public class BrtServiceIpml implements BrtService {
 
     @Value("${generator.options.directoryPath}")
     private String filename;
@@ -39,67 +39,33 @@ public class BrtServiceIpml implements BrtService{
     private final CallService callService;
     private final KafkaTemplate<Long, ResultBillingDto> kafkaResultBillingDtoTemplate;
 
+    @KafkaListener(topics = {"sendCallToBrt"}, groupId = "brt-service", containerFactory = "singleFactory")
+    public void calculateBalance(Call call) {
+        System.out.println("ASBKASGHIASASJHk");
+        Client client = clientService.findClientByPhoneNumber(call.getPhoneNumber());
+        BigDecimal balance = client.getBalance().subtract(call.getCost());
+        client.setBalance(balance);
+        clientService.updateClient(client);
+        callService.createCall(call);
+        sendToCrm();
+    }
 
+    @KafkaListener(topics = {"sendToBrtBilling"}, containerFactory = "singleFactory")
+    public void billing() {
+        sendMessageToCdr();
+        log.info("Request sent to cdr");
+    }
 
-        public void authorizeClient(List<CdrDto> cdrDtos){
-            List<CdrPlusDto> cdrPlusDtos = new ArrayList<>();
-            for (CdrDto cdrDto : cdrDtos){
-                Client client = clientService.findClientByPhoneNumber(cdrDto.getPhoneNumber());
-                    if(client.getBalance().compareTo(BigDecimal.ZERO) > 0){
-                        CdrPlusDto cdrPlusDto = new CdrPlusDto(cdrDto, client.getTariff());
-                        cdrPlusDtos.add(cdrPlusDto);
-                    }
-            }
-            for(CdrPlusDto cdrPlusDto: cdrPlusDtos){
-                kafkaListCdrPlusTemplate.send("sendToHrs", cdrPlusDto);
-            }
-        }
-
-    @KafkaListener(id = "brt", topics = {"sendCallToBrt"}, containerFactory = "singleFactory")
-        public void calculateBalance(Call call){
-            Client client = clientService.findClientByPhoneNumber(call.getPhoneNumber());
-            BigDecimal balance = client.getBalance().subtract(call.getCost());
-            client.setBalance(balance);
-            clientService.updateClient(client);
-            callService.createCall(call);
-            sendToCrm();
-        }
-
-        public ResultBillingDto getResultBillingDto(){
-            List<Client> clientList = clientService.getAll();
-            ResultBillingDto resultBillingDtoList = new ResultBillingDto();
-            List<NumberPhoneAndBalanceDto> numberPhoneAndBalanceDtos = new ArrayList<>();
-            for (Client client : clientList){
-                NumberPhoneAndBalanceDto numberPhoneAndBalanceDto =
-                        new NumberPhoneAndBalanceDto(client.getPhoneNumber(), client.getBalance().toString());
-                numberPhoneAndBalanceDtos.add(numberPhoneAndBalanceDto);
-            }
-            resultBillingDtoList.setNumbers(numberPhoneAndBalanceDtos);
-            return resultBillingDtoList;
-        }
-
-        public void sendToCrm(){
-            ResultBillingDto resultBillingDto = getResultBillingDto();
-            kafkaResultBillingDtoTemplate.send("sendToCrmResultBillingDto", resultBillingDto);
-            log.info("Result sent to crm");
-        }
-
-
-        public void sendMessageToCdr(){
-            String message = "request to create cdr file received";
-            kafkaStringTemplate.send("createCdr", message);
-        }
-
-    @KafkaListener(id = "brtSecond", topics = {"sendToBrt"}, containerFactory = "singleFactory")
+    @KafkaListener(topics = {"sendToBrt"}, containerFactory = "singleFactory")
     public void convertToDto() throws FileNotFoundException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         List<CdrDto> cdrDtoList = new ArrayList<>();
         File file = new File("Cdr-files/%s.txt", filename);
-        if(!file.exists()){
+        if (!file.exists()) {
             throw new FileNotFoundException("File " + file.getAbsolutePath() + " does not exist");
         }
         Scanner scanner = new Scanner(file);
-        while (scanner.hasNext()){
+        while (scanner.hasNext()) {
             String nextLine = scanner.nextLine();
             String[] cdrFromFile = nextLine.split(",");
             LocalDateTime startTime = LocalDateTime.parse(cdrFromFile[2], formatter);
@@ -112,16 +78,49 @@ public class BrtServiceIpml implements BrtService{
         authorizeClient(cdrDtoList);
     }
 
-    @KafkaListener(id = "brtThird", topics = {"sendToBrtBilling"}, containerFactory = "singleFactory")
-    public void billing(){
-            sendMessageToCdr();
-            log.info("Request sent to cdr");
+    public void authorizeClient(List<CdrDto> cdrDtos) {
+        List<CdrPlusDto> cdrPlusDtos = new ArrayList<>();
+        for (CdrDto cdrDto : cdrDtos) {
+            Client client = clientService.findClientByPhoneNumber(cdrDto.getPhoneNumber());
+            if (client.getBalance().compareTo(BigDecimal.ZERO) > 0) {
+                CdrPlusDto cdrPlusDto = new CdrPlusDto(cdrDto, client.getTariff());
+                cdrPlusDtos.add(cdrPlusDto);
+            }
+        }
+        for (CdrPlusDto cdrPlusDto : cdrPlusDtos) {
+            kafkaListCdrPlusTemplate.send("sendToHrs", cdrPlusDto);
+        }
     }
 
-    public String typeCall(String code){
-            if(code.equals("01")){
-                return "Outcome";
-            }
-            return "Income";
+    public ResultBillingDto getResultBillingDto() {
+        List<Client> clientList = clientService.getAll();
+        ResultBillingDto resultBillingDtoList = new ResultBillingDto();
+        List<NumberPhoneAndBalanceDto> numberPhoneAndBalanceDtos = new ArrayList<>();
+        for (Client client : clientList) {
+            NumberPhoneAndBalanceDto numberPhoneAndBalanceDto =
+                    new NumberPhoneAndBalanceDto(client.getPhoneNumber(), client.getBalance().toString());
+            numberPhoneAndBalanceDtos.add(numberPhoneAndBalanceDto);
+        }
+        resultBillingDtoList.setNumbers(numberPhoneAndBalanceDtos);
+        return resultBillingDtoList;
+    }
+
+    public void sendToCrm() {
+        ResultBillingDto resultBillingDto = getResultBillingDto();
+        kafkaResultBillingDtoTemplate.send("sendToCrmResultBillingDto", resultBillingDto);
+        log.info("Result sent to crm");
+    }
+
+
+    public void sendMessageToCdr() {
+        String message = "request to create cdr file received";
+        kafkaStringTemplate.send("createCdr", message);
+    }
+
+    public String typeCall(String code) {
+        if (code.equals("01")) {
+            return "Outcome";
+        }
+        return "Income";
     }
 }

@@ -20,7 +20,7 @@ public class ClientGenerator{
     private final TariffGenerator tariffGenerator;
     private final ClientRepository clientRepository;
 
-    @KafkaListener(id = "cdrSecond", topics = {"sendToBrtBilling"}, containerFactory = "batchFactory")
+    @KafkaListener(id = "cdrSecond", topics = {"generateClientInDB"}, containerFactory = "batchFactory")
     public void generateClient(List<CdrDto> cdrDotList){
         List<Client> clientList = new ArrayList<>();
         for (CdrDto cdrDto : cdrDotList){

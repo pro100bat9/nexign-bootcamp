@@ -11,10 +11,12 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class ChangeTariffDto {
+    private Long id;
     private String numberPhone;
     private String tariffId;
 
-    public ChangeTariffDto(String numberPhone, String tariffId) {
+    public ChangeTariffDto(Long id, String numberPhone, String tariffId) {
+        this.id = id;
         this.numberPhone = numberPhone;
         this.tariffId = tariffId;
     }

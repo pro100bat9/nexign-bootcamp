@@ -2,7 +2,6 @@ package com.example.hrs.service;
 
 import com.example.commonthings.entity.Call;
 import com.example.commonthings.entity.Client;
-import com.example.commonthings.exception.ClientNotFoundException;
 import com.example.commonthings.model.CdrPlusDto;
 import com.example.commonthings.repository.ClientRepository;
 import com.example.commonthings.service.ClientService;
@@ -24,12 +23,11 @@ public class HrsServiceImpl implements HrsService{
     private final KafkaTemplate<Long, Call> kafkaTemplate;
     private final ClientService clientService;
 
-    @KafkaListener(id = "brt", topics = {"sendToHrs"}, containerFactory = "singleFactory")
+    @KafkaListener(id = "hrs", topics = {"sendToHrs"}, containerFactory = "singleFactory")
     public void calculationBalance(CdrPlusDto cdrPlusDto){
         double duration = calculateDuration(cdrPlusDto.getCdrDto().getStartTime(),
                 cdrPlusDto.getCdrDto().getEndTime());
         BigDecimal cost = calculateCost(cdrPlusDto, duration);
-
         Call call = new Call(cdrPlusDto.getCdrDto().getTypeCall(), cdrPlusDto.getCdrDto().getStartTime(),
                 cdrPlusDto.getCdrDto().getEndTime(), duration, cost, cdrPlusDto.getCdrDto().getPhoneNumber());
         sendToBrt(call);

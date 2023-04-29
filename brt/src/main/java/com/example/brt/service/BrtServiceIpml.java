@@ -58,7 +58,7 @@ public class BrtServiceIpml implements BrtService{
         }
 
         @Override
-    @KafkaListener(id = "brt", topics = {"sendCallToBrt"}, containerFactory = "singleFactory")
+        @KafkaListener(id = "brt", topics = {"sendCallToBrt"}, containerFactory = "singleFactory")
         public void calculateBalance(Call call){
             Client client = clientService.findClientByPhoneNumber(call.getPhoneNumber());
             BigDecimal balance = client.getBalance().subtract(call.getCost());

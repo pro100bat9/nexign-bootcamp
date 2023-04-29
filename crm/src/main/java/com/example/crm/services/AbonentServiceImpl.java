@@ -12,15 +12,16 @@ import com.example.commonthings.service.TariffService;
 import com.example.crm.exception.BillingException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-//TODO интерфейс сделай и по папкам раскидай
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AbonentServiceImpl implements AbonentService{
     private final KafkaTemplate<Long, String> kafkaTemplate;
     private final ClientService clientService;
@@ -29,7 +30,8 @@ public class AbonentServiceImpl implements AbonentService{
     private ResultBillingDto resultBillingDtos = null;
 
     public PaymentDto pay(String phoneNumber, String money) {
-        PaymentDto paymentDto = new PaymentDto(phoneNumber, money);
+        Client client = clientService.findClientByPhoneNumber(phoneNumber);
+        PaymentDto paymentDto = new PaymentDto(client.getId(),phoneNumber, money);
         return clientService.replenishmentOfTheBalance(paymentDto);
     }
 
@@ -39,7 +41,8 @@ public class AbonentServiceImpl implements AbonentService{
 
 
     public ChangeTariffDto changeTariff(String numberPhone, String tariff) {
-        ChangeTariffDto changeTariffDto = new ChangeTariffDto(numberPhone, tariff);
+        Client client = clientService.findClientByPhoneNumber(numberPhone);
+        ChangeTariffDto changeTariffDto = new ChangeTariffDto(client.getId(), numberPhone, tariff);
         return managerService.changeClientTariff(changeTariffDto);
     }
 
@@ -61,6 +64,8 @@ public class AbonentServiceImpl implements AbonentService{
         if(message.equals("run")) {
             String message1 = "billing started";
             kafkaTemplate.send("sendToBrtBilling", message1);
+            log.info("send to brt");
+
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {

@@ -19,11 +19,6 @@ public class Abonent {
 
     private final AbonentServiceImpl abonentService;
 
-//    @Autowired
-//    public Abonent(AbonentServiceImpl abonentService) {
-//        this.abonentService = abonentService;
-//    }
-
     @PostMapping("/pay")
     public ResponseEntity<?> pay(@RequestBody AbonentPay data) {
         var client = abonentService.pay(data.getNumberPhone(), data.getMoney());

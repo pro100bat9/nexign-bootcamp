@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -40,13 +41,13 @@ public class GeneratorCdrServiceImpl implements GeneratorCdrService {
         this.cdrService = cdrService;
     }
 
+    @KafkaListener(id = "cdr", topics = {"createCdr"}, containerFactory = "batchFactory")
     @Override
-    @KafkaListener(id = "cdr", topics = {"createCdr"}, containerFactory = "singleFactory")
-    public void generateCdrTxt(String message){
-        File file = new File("Cdr-files/%s.txt", filename);
+    public void generateCdrTxt(){
+        File file = new File(String.format("Cdr-files/%s.txt", filename));
         StringBuilder builder = new StringBuilder();
             try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file))){
-                for(int i = 0; amountPhone <= i; i++){
+                for(int i = 0; amountPhone >= i; i++){
                     generateString(builder);
                 }
                 bufferedWriter.write(builder.toString());
@@ -55,9 +56,11 @@ public class GeneratorCdrServiceImpl implements GeneratorCdrService {
                 ex.getStackTrace();
             }
 
-        log.info(message);
+//            String message = "message in brt";
+        log.info("message");
         cdrService.SendToBrt();
     }
+
     public void generateString(StringBuilder builder){
         String phoneNumber = generatePhoneNumber();
         int randomNumber = random.nextInt(40);
@@ -65,7 +68,7 @@ public class GeneratorCdrServiceImpl implements GeneratorCdrService {
         for(int i = 0; i <= randomNumber; i++){
             LocalDateTime startDateTime = LocalDateTime.now();
             LocalDateTime endDateTime = generateDate(startDateTime);
-            builder.append(String.format(stringForCdr, phoneNumber, generateTypeCall(),
+            builder.append(String.format(stringForCdr, generateTypeCall(), phoneNumber,
                     startDateTime.format(dateTimeFormatter),endDateTime.format(dateTimeFormatter)));
         }
 

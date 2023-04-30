@@ -2,7 +2,6 @@ package com.example.brt.service;
 
 import com.example.commonthings.entity.Call;
 import com.example.commonthings.entity.Client;
-import com.example.commonthings.entity.TypeCall;
 import com.example.commonthings.model.CdrPlusDto;
 import com.example.commonthings.model.CdrDto;
 import com.example.commonthings.model.NumberPhoneAndBalanceDto;
@@ -16,6 +15,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
@@ -36,9 +36,10 @@ public class BrtServiceIpml implements BrtService{
     private final ClientService clientService;
     private final KafkaTemplate<Long, String> kafkaStringTemplate;
     private final KafkaTemplate<Long, CdrPlusDto> kafkaListCdrPlusTemplate;
-    private final KafkaTemplate<Long, List<CdrDto>> kafkaCdrDtoTemplate;
+    private final KafkaTemplate<Long, CdrDto> kafkaCdrDtoTemplate;
     private final CallService callService;
     private final KafkaTemplate<Long, ResultBillingDto> kafkaResultBillingDtoTemplate;
+    private final KafkaTemplate<Long, NumberPhoneAndBalanceDto> kafkaNumberPhoneAndBalanceDtoTemplate;
 
 
 
@@ -52,13 +53,14 @@ public class BrtServiceIpml implements BrtService{
                         cdrPlusDtos.add(cdrPlusDto);
                     }
             }
+            log.info("prepair for send to hrs");
             for(CdrPlusDto cdrPlusDto: cdrPlusDtos){
                 kafkaListCdrPlusTemplate.send("sendToHrs", cdrPlusDto);
             }
         }
 
         @Override
-        @KafkaListener(id = "brt", topics = {"sendCallToBrt"}, containerFactory = "singleFactory")
+    @KafkaListener(id = "brt", topics = {"sendCallToBrt"}, containerFactory = "singleFactory")
         public void calculateBalance(Call call){
             Client client = clientService.findClientByPhoneNumber(call.getPhoneNumber());
             BigDecimal balance = client.getBalance().subtract(call.getCost());
@@ -66,42 +68,48 @@ public class BrtServiceIpml implements BrtService{
             clientService.updateClient(client);
             callService.createCall(call);
             sendToCrm();
+            log.info("sended to crm from brt");
         }
 
         @Override
-        public ResultBillingDto getResultBillingDto(){
+        public List<NumberPhoneAndBalanceDto> getResultBillingDto(){
             List<Client> clientList = clientService.getAll();
-            ResultBillingDto resultBillingDtoList = new ResultBillingDto();
+//            ResultBillingDto resultBillingDtoList = new ResultBillingDto();
             List<NumberPhoneAndBalanceDto> numberPhoneAndBalanceDtos = new ArrayList<>();
             for (Client client : clientList){
                 NumberPhoneAndBalanceDto numberPhoneAndBalanceDto =
                         new NumberPhoneAndBalanceDto(client.getPhoneNumber(), client.getBalance().toString());
                 numberPhoneAndBalanceDtos.add(numberPhoneAndBalanceDto);
             }
-            resultBillingDtoList.setNumbers(numberPhoneAndBalanceDtos);
-            return resultBillingDtoList;
+//            resultBillingDtoList.setNumbers(numberPhoneAndBalanceDtos);
+            return numberPhoneAndBalanceDtos;
         }
 
 
     @Override
+    @PostConstruct
         public void sendToCrm(){
-            ResultBillingDto resultBillingDto = getResultBillingDto();
-            kafkaResultBillingDtoTemplate.send("sendToCrmResultBillingDto", resultBillingDto);
+        List<NumberPhoneAndBalanceDto> resultBillingDto = getResultBillingDto();
+        for (NumberPhoneAndBalanceDto numberPhoneAndBalanceDto : resultBillingDto){
+            kafkaNumberPhoneAndBalanceDtoTemplate.send("sendToCrmResultBillingDto", numberPhoneAndBalanceDto);
+        }
+//            kafkaResultBillingDtoTemplate.send("sendToCrmResultBillingDto", resultBillingDto);
             log.info("Result sent to crm");
         }
 
     @Override
-        public void sendMessageToCdr(){
-            String message = "request to create cdr file received";
+        public void sendMessageToCdr(String message){
+//            String message = "request to create cdr file received";
             kafkaStringTemplate.send("createCdr", message);
         }
 
     @KafkaListener(id = "brtSecond", topics = {"sendToBrt"}, containerFactory = "singleFactory")
     @Override
     public void convertToDto() throws FileNotFoundException {
+//            CdrDto cdrDto1 = new CdrDto();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         List<CdrDto> cdrDtoList = new ArrayList<>();
-        File file = new File("Cdr-files/%s.txt", filename);
+        File file = new File(String.format("Cdr-files/%s.txt", filename));
         if(!file.exists()){
             throw new FileNotFoundException("File " + file.getAbsolutePath() + " does not exist");
         }
@@ -111,27 +119,31 @@ public class BrtServiceIpml implements BrtService{
             String[] cdrFromFile = nextLine.split(",");
             LocalDateTime startTime = LocalDateTime.parse(cdrFromFile[2], formatter);
             LocalDateTime endTime = LocalDateTime.parse(cdrFromFile[3], formatter);
-            TypeCall typeCall = new TypeCall(cdrFromFile[0], typeCall(cdrFromFile[0]));
-            CdrDto cdrDto = new CdrDto(cdrFromFile[1], startTime, endTime, typeCall);
-            cdrDtoList.add(cdrDto);
+//            TypeCall typeCall = new TypeCall(cdrFromFile[0], typeCall(cdrFromFile[0]));
+            CdrDto cdrDto = new CdrDto(cdrFromFile[1], startTime, endTime, cdrFromFile[0]);
+            if(!checkPhoneNumber(cdrDtoList, cdrDto.getPhoneNumber())) {
+                kafkaCdrDtoTemplate.send("generateClientInDB", cdrDto);
+                cdrDtoList.add(cdrDto);
+            }
         }
-
         authorizeClient(cdrDtoList);
-        kafkaCdrDtoTemplate.send("generateClientInDB", cdrDtoList);
     }
 
     @KafkaListener(id = "brtThird", topics = {"sendToBrtBilling"}, containerFactory = "singleFactory")
     @Override
     public Boolean billing(){
-            sendMessageToCdr();
-            log.info("Request sent to cdr");
+            sendMessageToCdr("methoodBiling");
+            log.info("methoodBiling");
             return true;
     }
 
-    public String typeCall(String code){
-            if(code.equals("01")){
-                return "Outcome";
+    public Boolean checkPhoneNumber(List<CdrDto> cdrDtoList, String phoneNumber){
+            for(CdrDto cdrDto : cdrDtoList){
+                if(cdrDto.getPhoneNumber().equals(phoneNumber)){
+                    return true;
+                }
             }
-            return "Income";
+            return false;
+
     }
 }

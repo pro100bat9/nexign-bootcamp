@@ -6,6 +6,7 @@ import com.example.commonthings.model.CdrPlusDto;
 import com.example.commonthings.repository.ClientRepository;
 import com.example.commonthings.service.ClientService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class HrsServiceImpl implements HrsService{
 
     private final ClientRepository clientRepository;
@@ -34,16 +36,17 @@ public class HrsServiceImpl implements HrsService{
     }
 
     public void sendToBrt(Call call){
+        log.info("tariff calculated");
         kafkaTemplate.send("sendCallToBrt", call);
     }
 
     public BigDecimal calculateCost(CdrPlusDto cdrPlusDto, double duration){
         BigDecimal result = BigDecimal.ZERO;
         Client client = clientService.findClientByPhoneNumber(cdrPlusDto.getCdrDto().getPhoneNumber());
-        if(cdrPlusDto.getCdrDto().getTypeCall().getCode().equals("02")){
+        if(cdrPlusDto.getCdrDto().getTypeCall().equals("02")){
             result = calculatePriceForLimitIncome(cdrPlusDto, client, duration);
         }
-        if(cdrPlusDto.getCdrDto().getTypeCall().getCode().equals("01")){
+        if(cdrPlusDto.getCdrDto().getTypeCall().equals("01")){
            result = calculatePriceForLimitOutcome(cdrPlusDto, client, duration);
         }
         double totalTime = client.getTotalCallTime() + duration;

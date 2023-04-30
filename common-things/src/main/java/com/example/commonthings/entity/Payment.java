@@ -17,7 +17,10 @@ import java.math.BigDecimal;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name= "id")
     private Long id;
+    @Column(name= "number_phone", nullable = false)
     private String numberPhone;
+    @Column(name= "money", nullable = false, scale = 1)
     private BigDecimal money;
 }

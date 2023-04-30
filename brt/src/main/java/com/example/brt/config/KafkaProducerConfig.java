@@ -2,6 +2,7 @@ package com.example.brt.config;
 
 import com.example.commonthings.model.CdrDto;
 import com.example.commonthings.model.CdrPlusDto;
+import com.example.commonthings.model.NumberPhoneAndBalanceDto;
 import com.example.commonthings.model.ResultBillingDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -64,6 +65,18 @@ public class KafkaProducerConfig {
 
     @Bean
     public ProducerFactory<Long, List<CdrDto>> producerCdrDtoFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
+    public KafkaTemplate<Long, NumberPhoneAndBalanceDto> producerNumberPhoneAndBalanceDtoTemplate() {
+        KafkaTemplate<Long, NumberPhoneAndBalanceDto> template = new KafkaTemplate<>(producerNumberPhoneAndBalanceDtoFactory());
+        template.setMessageConverter(new StringJsonMessageConverter());
+        return template;
+    }
+
+    @Bean
+    public ProducerFactory<Long, NumberPhoneAndBalanceDto> producerNumberPhoneAndBalanceDtoFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 

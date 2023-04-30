@@ -40,7 +40,7 @@ public class ClientServiceImpl implements ClientService{
     @Override
     public Client findClientByPhoneNumber(String phoneNumber) {
         return clientRepository.findClientByPhoneNumber(phoneNumber).orElseThrow(
-                () -> new ClientNotFoundException("Client with phone number " + phoneNumber + "not found"));
+                () -> new ClientNotFoundException("Client with phone number" + phoneNumber + "not found"));
     }
 
     @Override

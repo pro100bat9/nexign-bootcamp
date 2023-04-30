@@ -1,9 +1,7 @@
 package com.example.cdr.service.clientGenerator;
 
 import com.example.commonthings.entity.Tariff;
-import com.example.commonthings.exception.TariffNotFoundException;
 import com.example.commonthings.repository.TariffRepository;
-import com.example.commonthings.service.TariffService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -35,10 +33,10 @@ public class TariffGenerator {
                     .name("UnlimitedTariff")
                     .fixedPrice(BigDecimal.valueOf(100))
                     .minuteLimit(300)
-                    .IncomeMinuteCostBeforeLimit(BigDecimal.valueOf(0))
-                    .IncomeMinuteCostAfterLimit(BigDecimal.valueOf(1))
-                    .OutcomeMinuteCostBeforeLimit(BigDecimal.valueOf(0))
-                    .OutcomeMinuteCostAfterLimit(BigDecimal.valueOf(0)).build();
+                    .incomeMinuteCostBeforeLimit(BigDecimal.valueOf(0))
+                    .incomeMinuteCostAfterLimit(BigDecimal.valueOf(1))
+                    .outcomeMinuteCostBeforeLimit(BigDecimal.valueOf(0))
+                    .outcomeMinuteCostAfterLimit(BigDecimal.valueOf(0)).build();
         }
         else if(options.get(index).equals("03")){
             return Tariff.builder()
@@ -46,10 +44,10 @@ public class TariffGenerator {
                     .name("MinuteByMinuteTariff")
                     .fixedPrice(BigDecimal.valueOf(0))
                     .minuteLimit(0)
-                    .IncomeMinuteCostBeforeLimit(BigDecimal.valueOf(1.5))
-                    .IncomeMinuteCostAfterLimit(BigDecimal.valueOf(1.5))
-                    .OutcomeMinuteCostBeforeLimit(BigDecimal.valueOf(1.5))
-                    .OutcomeMinuteCostAfterLimit(BigDecimal.valueOf(1.5)).build();
+                    .incomeMinuteCostBeforeLimit(BigDecimal.valueOf(1.5))
+                    .incomeMinuteCostAfterLimit(BigDecimal.valueOf(1.5))
+                    .outcomeMinuteCostBeforeLimit(BigDecimal.valueOf(1.5))
+                    .outcomeMinuteCostAfterLimit(BigDecimal.valueOf(1.5)).build();
         }
         else if(options.get(index).equals("11")){
             return Tariff.builder()
@@ -57,10 +55,10 @@ public class TariffGenerator {
                     .name("OrdinaryTariff")
                     .fixedPrice(BigDecimal.valueOf(0))
                     .minuteLimit(100)
-                    .IncomeMinuteCostBeforeLimit(BigDecimal.valueOf(0))
-                    .IncomeMinuteCostAfterLimit(BigDecimal.valueOf(0))
-                    .OutcomeMinuteCostBeforeLimit(BigDecimal.valueOf(0,5))
-                    .OutcomeMinuteCostAfterLimit(BigDecimal.valueOf(1.5)).build();
+                    .incomeMinuteCostBeforeLimit(BigDecimal.valueOf(0))
+                    .incomeMinuteCostAfterLimit(BigDecimal.valueOf(0))
+                    .outcomeMinuteCostBeforeLimit(BigDecimal.valueOf(0,5))
+                    .outcomeMinuteCostAfterLimit(BigDecimal.valueOf(1.5)).build();
         }
         throw new IllegalArgumentException("wrong index tariff" + index);
 

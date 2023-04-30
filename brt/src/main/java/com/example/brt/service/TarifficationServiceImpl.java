@@ -1,14 +1,11 @@
 package com.example.brt.service;
 
-import com.example.commonthings.model.CdrDto;
 import com.example.commonthings.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +17,7 @@ public class TarifficationServiceImpl implements TarifficationService{
 
 
     @Override
-    @PostConstruct
+//    @PostConstruct
     public void firstTariffication() {
         if(clientService.getAll().isEmpty()){
             if(!brtService.billing()){

@@ -16,15 +16,16 @@ import java.time.LocalDateTime;
 public class Call {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name= "id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "call_type_id")
-    private TypeCall typeCall;
+    @Column(name= "type_call")
+    private String typeCall;
 
+    @Column(name= "phone_number", nullable = false)
     private String phoneNumber;
 
-    public Call(TypeCall typeCall, LocalDateTime startTime, LocalDateTime endTime, double duration, BigDecimal cost,
+    public Call(String typeCall, LocalDateTime startTime, LocalDateTime endTime, double duration, BigDecimal cost,
                 String phoneNumber){
         this.typeCall = typeCall;
         this.startTime = startTime;
@@ -34,11 +35,15 @@ public class Call {
         this.phoneNumber = phoneNumber;
     }
 
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
+    @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
+    @Column(name = "duration", nullable = false)
     private double duration;
 
+    @Column(name = "cost", scale = 1)
     private BigDecimal cost;
 }

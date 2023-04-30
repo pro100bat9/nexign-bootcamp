@@ -61,6 +61,18 @@ public class KafkaProducerConfig {
     }
 
     @Bean
+    public ProducerFactory<Long, List<CdrDto>> producerCdrDtoFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
+    public KafkaTemplate<Long, List<CdrDto>> producerCdrDtoTemplate() {
+        KafkaTemplate<Long, List<CdrDto>> template = new KafkaTemplate<>(producerCdrDtoFactory());
+        template.setMessageConverter(new StringJsonMessageConverter());
+        return template;
+    }
+
+    @Bean
     public NewTopic topic() {
         return TopicBuilder
                 .name("sendToBrt")

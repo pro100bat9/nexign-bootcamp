@@ -2,10 +2,7 @@ package com.example.crm.services;
 
 import com.example.commonthings.entity.Client;
 import com.example.commonthings.entity.Tariff;
-import com.example.commonthings.model.CallsDetailsDto;
-import com.example.commonthings.model.ChangeTariffDto;
-import com.example.commonthings.model.PaymentDto;
-import com.example.commonthings.model.ResultBillingDto;
+import com.example.commonthings.model.*;
 import com.example.commonthings.service.ClientService;
 import com.example.commonthings.service.ManagerService;
 import com.example.commonthings.service.TariffService;
@@ -17,7 +14,10 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class AbonentServiceImpl implements AbonentService{
     private final ClientService clientService;
     private final ManagerService managerService;
     private final TariffService tariffService;
-    private ResultBillingDto resultBillingDtos = null;
+    private ResultBillingDto resultBillingDtos = new ResultBillingDto();
 
     public PaymentDto pay(String phoneNumber, String money) {
         Client client = clientService.findClientByPhoneNumber(phoneNumber);
@@ -58,16 +58,16 @@ public class AbonentServiceImpl implements AbonentService{
         return managerService.createClient(client);
     }
 
-//    TODO секунды может не хватить
     @SneakyThrows
     public ResultBillingDto billing(String message){
+        resultBillingDtos.getNumbers().clear();
         if(message.equals("run")) {
             String message1 = "billing started";
             kafkaTemplate.send("sendToBrtBilling", message1);
             log.info("send to brt");
 
             try {
-                Thread.sleep(1000);
+                Thread.sleep(5000);
             } catch (Exception e) {
                 System.out.println(e);
             }
@@ -79,7 +79,25 @@ public class AbonentServiceImpl implements AbonentService{
     }
 
     @KafkaListener(id = "crm", topics = {"sendToCrmResultBillingDto"}, containerFactory = "singleFactory")
-    public void getBilling(ResultBillingDto resultBillingDto){
-        resultBillingDtos = resultBillingDto;
+    public void getBilling(NumberPhoneAndBalanceDto resultBillingDto){
+            if(!checkNumber(resultBillingDto.getPhoneNumber())){
+                resultBillingDtos.getNumbers().add(resultBillingDto);
+            }
+
+    }
+
+    @PostConstruct
+    public void generateList(){
+        List<NumberPhoneAndBalanceDto> numberPhoneAndBalanceDtos = new ArrayList<>();
+        this.resultBillingDtos.setNumbers(numberPhoneAndBalanceDtos);
+    }
+
+    public Boolean checkNumber(String number){
+        for(NumberPhoneAndBalanceDto numberPhoneAndBalanceDto : resultBillingDtos.getNumbers()){
+            if(numberPhoneAndBalanceDto.getPhoneNumber().equals(number)){
+                return true;
+            }
+        }
+        return false;
     }
 }

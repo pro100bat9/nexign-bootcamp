@@ -14,14 +14,18 @@ import java.math.BigDecimal;
 @Builder
 public class Client {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name= "id")
     private Long id;
-    @Column(unique = true)
+    @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
     @ManyToOne
-    @JoinColumn(name = "TARIFF_ID")
+    @JoinColumn(name = "tariff_id")
     private Tariff tariff;
+    @Column(name = "balance", nullable = false, scale = 1)
     private BigDecimal balance;
+    @Column(name = "total_Call_Time")
     private double totalCallTime;
+    @Column(name = "monetary_unit", nullable = false)
     private String monetaryUnit;
 }

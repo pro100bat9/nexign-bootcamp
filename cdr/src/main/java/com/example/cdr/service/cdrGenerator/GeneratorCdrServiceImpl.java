@@ -63,7 +63,7 @@ public class GeneratorCdrServiceImpl implements GeneratorCdrService {
 
     public void generateString(StringBuilder builder){
         String phoneNumber = generatePhoneNumber();
-        int randomNumber = random.nextInt(40);
+        int randomNumber = random.nextInt(100);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         for(int i = 0; i <= randomNumber; i++){
             LocalDateTime startDateTime = LocalDateTime.now();
@@ -75,7 +75,7 @@ public class GeneratorCdrServiceImpl implements GeneratorCdrService {
     }
 
     public String generatePhoneNumber(){
-        String phoneNumber = "791291964" + faker.numerify("##");
+        String phoneNumber = "79129196" + faker.numerify("###");
         return phoneNumber;
     }
 

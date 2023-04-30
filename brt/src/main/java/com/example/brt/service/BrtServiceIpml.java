@@ -87,26 +87,20 @@ public class BrtServiceIpml implements BrtService{
 
 
     @Override
-//    @PostConstruct
         public void sendToCrm(){
         ResultBillingDto resultBillingDto = getResultBillingDto();
-//        for (NumberPhoneAndBalanceDto numberPhoneAndBalanceDto : resultBillingDto){
-//            kafkaNumberPhoneAndBalanceDtoTemplate.send("sendToCrmResultBillingDto", numberPhoneAndBalanceDto);
-//        }
             kafkaResultBillingDtoTemplate.send("sendToCrmResultBillingDto", resultBillingDto);
             log.info("Result sent to crm");
         }
 
     @Override
         public void sendMessageToCdr(String message){
-//            String message = "request to create cdr file received";
             kafkaStringTemplate.send("createCdr", message);
         }
 
     @KafkaListener(id = "brtSecond", topics = {"sendToBrt"}, containerFactory = "singleFactory")
     @Override
     public void convertToDto() throws FileNotFoundException {
-//            CdrDto cdrDto1 = new CdrDto();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         List<CdrDto> cdrDtoList = new ArrayList<>();
         File file = new File(String.format("Cdr-files/%s.txt", filename));
@@ -119,12 +113,11 @@ public class BrtServiceIpml implements BrtService{
             String[] cdrFromFile = nextLine.split(",");
             LocalDateTime startTime = LocalDateTime.parse(cdrFromFile[2], formatter);
             LocalDateTime endTime = LocalDateTime.parse(cdrFromFile[3], formatter);
-//            TypeCall typeCall = new TypeCall(cdrFromFile[0], typeCall(cdrFromFile[0]));
             CdrDto cdrDto = new CdrDto(cdrFromFile[1], startTime, endTime, cdrFromFile[0]);
             if(!checkPhoneNumber(cdrDtoList, cdrDto.getPhoneNumber())) {
                 kafkaCdrDtoTemplate.send("generateClientInDB", cdrDto);
-                cdrDtoList.add(cdrDto);
             }
+            cdrDtoList.add(cdrDto);
         }
         authorizeClient(cdrDtoList);
     }

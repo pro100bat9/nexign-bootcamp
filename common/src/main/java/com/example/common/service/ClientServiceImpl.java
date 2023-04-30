@@ -24,7 +24,7 @@ public class ClientServiceImpl implements ClientService{
     @Override
     public Client createClient(Client client) {
         if(clientRepository.findClientByPhoneNumber(client.getPhoneNumber()).isPresent()){
-            throw new ClientAlreadyExistException("Client with number phone" + client.getPhoneNumber() + "already exist");
+            throw new ClientAlreadyExistException("Client with number phone " + client.getPhoneNumber() + " already exist");
         }
         return clientRepository.save(client);
     }
@@ -40,7 +40,7 @@ public class ClientServiceImpl implements ClientService{
     @Override
     public Client findClientByPhoneNumber(String phoneNumber) {
         return clientRepository.findClientByPhoneNumber(phoneNumber).orElseThrow(
-                () -> new ClientNotFoundException("Client with phone number" + phoneNumber + "not found"));
+                () -> new ClientNotFoundException("Client with phone number " + phoneNumber + " not found"));
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ClientServiceImpl implements ClientService{
         var client = clientRepository.findClientByPhoneNumber(payBalanceDto.getPhoneNumber())
                 .orElseThrow(() ->
                         new ClientNotFoundException("Client with phone number " +
-                                payBalanceDto.getPhoneNumber() + "not found"));
+                                payBalanceDto.getPhoneNumber() + " not found"));
         BigDecimal money = new BigDecimal(payBalanceDto.getMoney());
         BigDecimal newBalance = client.getBalance().add(money);
         client.setBalance(newBalance);
@@ -62,7 +62,7 @@ public class ClientServiceImpl implements ClientService{
     @Override
     public CallsDetailsDto getDetailsCalls(String phoneNumber) {
         var client = clientRepository.findClientByPhoneNumber(phoneNumber).orElseThrow(
-                () -> new ClientNotFoundException("Client with phone number " + phoneNumber + "not found"));
+                () -> new ClientNotFoundException("Client with phone number " + phoneNumber + " not found"));
         List<Call> callList = callService.getCallsByPhoneNumber(phoneNumber);
         BigDecimal totalCost = countTotalPrice(callList);
         return new CallsDetailsDto(client.getId(), phoneNumber,

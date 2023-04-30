@@ -75,7 +75,7 @@ public class AbonentServiceImpl implements AbonentService{
             log.info("send to brt");
 
             try {
-                Thread.sleep(10000);
+                Thread.sleep(1000000);
             } catch (Exception e) {
                 System.out.println(e);
             }

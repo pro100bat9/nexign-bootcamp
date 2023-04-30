@@ -19,7 +19,7 @@ public class Abonent {
 
     private final AbonentServiceImpl abonentService;
 
-    @PostMapping("/pay")
+    @PatchMapping("/pay")
     public ResponseEntity<?> pay(@RequestBody AbonentPay data) {
         var client = abonentService.pay(data.getNumberPhone(), data.getMoney());
         return ResponseEntity.ok().body(AbonentPayResponse.builder()
@@ -29,7 +29,7 @@ public class Abonent {
                 .build());
     }
 
-    @PostMapping("/report/{numberPhone}")
+    @GetMapping("/report/{numberPhone}")
     public ResponseEntity<?> report(@PathVariable String numberPhone) {
         var client = abonentService.getClient(numberPhone);
         var calls = client.getPayload();

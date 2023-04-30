@@ -1,6 +1,7 @@
 package com.example.crm.controllers;
 
 
+import com.example.common.exception.ClientAlreadyExistException;
 import com.example.crm.services.AbonentServiceImpl;
 import com.example.crm.wrappers.request.BillingRequest;
 import com.example.crm.wrappers.request.ChangeTariff;
@@ -21,14 +22,20 @@ public class Manager {
     public ResponseEntity<?> changeTariff(@RequestBody ChangeTariff data) {
         var client = abonentService.changeTariff(data.getNumberPhone(),data.getTariff_id());
         return ResponseEntity.ok().body(AbonentChangeTariffResponse.builder()
-                .numberPhone(client.getNumberPhone())
-                .tariff_id(client.getTariffId())
-                .build());
+                    .id(client.getId().toString())
+                    .numberPhone(client.getNumberPhone())
+                    .tariff_id(client.getTariffId())
+                    .build());
     }
 
-    @PostMapping("/abonent")
+    @PostMapping("/createAbonent")
     public ResponseEntity<?> createAbonent(@RequestBody CreateAbonent data) {
-        var client = abonentService.create(data.getNumberPhone(), data.getTariff_id(), data.getBalance());
+        try{
+            var client = abonentService.create(data.getNumberPhone(), data.getTariff_id(), data.getBalance());
+        }
+        catch (ClientAlreadyExistException ex){
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
         return ResponseEntity.ok().body(data);
     }
 

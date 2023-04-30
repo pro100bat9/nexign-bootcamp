@@ -9,5 +9,5 @@ public interface AbonentService {
     ChangeTariffDto changeTariff(String numberPhone, String tariff);
     Client create(String phoneNumber, String tariffId, String balance);
     ResultBillingDto billing(String message);
-    void getBilling(NumberPhoneAndBalanceDto resultBillingDto);
+    void getBilling(ResultBillingDto resultBillingDto);
 }

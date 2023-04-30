@@ -10,10 +10,13 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
+//@AllArgsConstructor
 @NoArgsConstructor
 @Component
 public class ResultBillingDto {
     private List<NumberPhoneAndBalanceDto> numbers;
+    public ResultBillingDto(List<NumberPhoneAndBalanceDto> numbers){
+        this.numbers = numbers;
+    }
 
 }

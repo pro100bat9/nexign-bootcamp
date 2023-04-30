@@ -29,23 +29,25 @@ public class AbonentServiceImpl implements AbonentService{
     private final TariffService tariffService;
     private ResultBillingDto resultBillingDtos = new ResultBillingDto();
 
+    @Override
     public PaymentDto pay(String phoneNumber, String money) {
         Client client = clientService.findClientByPhoneNumber(phoneNumber);
         PaymentDto paymentDto = new PaymentDto(client.getId(),phoneNumber, money);
         return clientService.replenishmentOfTheBalance(paymentDto);
     }
 
+    @Override
     public CallsDetailsDto getClient(String numberPhone) {
         return clientService.getDetailsCalls(numberPhone);
     }
-
-
+    @Override
     public ChangeTariffDto changeTariff(String numberPhone, String tariff) {
         Client client = clientService.findClientByPhoneNumber(numberPhone);
         ChangeTariffDto changeTariffDto = new ChangeTariffDto(client.getId(), numberPhone, tariff);
         return managerService.changeClientTariff(changeTariffDto);
     }
 
+    @Override
     public Client create(String phoneNumber, String tariffId, String balance) {
         Tariff tariff = tariffService.findByIndex(tariffId);
         Client client = Client.builder()
@@ -59,15 +61,21 @@ public class AbonentServiceImpl implements AbonentService{
     }
 
     @SneakyThrows
+    @Override
     public ResultBillingDto billing(String message){
-        resultBillingDtos.getNumbers().clear();
+        try {
+            resultBillingDtos.getNumbers().clear();
+        }
+        catch (NullPointerException ex){
+            ex.printStackTrace();
+        }
         if(message.equals("run")) {
             String message1 = "billing started";
             kafkaTemplate.send("sendToBrtBilling", message1);
             log.info("send to brt");
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             } catch (Exception e) {
                 System.out.println(e);
             }
@@ -78,26 +86,10 @@ public class AbonentServiceImpl implements AbonentService{
         return resultBillingDtos;
     }
 
+
     @KafkaListener(id = "crm", topics = {"sendToCrmResultBillingDto"}, containerFactory = "singleFactory")
-    public void getBilling(NumberPhoneAndBalanceDto resultBillingDto){
-            if(!checkNumber(resultBillingDto.getPhoneNumber())){
-                resultBillingDtos.getNumbers().add(resultBillingDto);
-            }
-
-    }
-
-    @PostConstruct
-    public void generateList(){
-        List<NumberPhoneAndBalanceDto> numberPhoneAndBalanceDtos = new ArrayList<>();
-        this.resultBillingDtos.setNumbers(numberPhoneAndBalanceDtos);
-    }
-
-    public Boolean checkNumber(String number){
-        for(NumberPhoneAndBalanceDto numberPhoneAndBalanceDto : resultBillingDtos.getNumbers()){
-            if(numberPhoneAndBalanceDto.getPhoneNumber().equals(number)){
-                return true;
-            }
-        }
-        return false;
+    @Override
+    public void getBilling(ResultBillingDto resultBillingDto){
+            this.resultBillingDtos = resultBillingDto;
     }
 }

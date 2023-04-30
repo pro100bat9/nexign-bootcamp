@@ -72,28 +72,28 @@ public class BrtServiceIpml implements BrtService{
         }
 
         @Override
-        public List<NumberPhoneAndBalanceDto> getResultBillingDto(){
+        public ResultBillingDto getResultBillingDto(){
             List<Client> clientList = clientService.getAll();
-//            ResultBillingDto resultBillingDtoList = new ResultBillingDto();
+            ResultBillingDto resultBillingDtoList = new ResultBillingDto();
             List<NumberPhoneAndBalanceDto> numberPhoneAndBalanceDtos = new ArrayList<>();
             for (Client client : clientList){
                 NumberPhoneAndBalanceDto numberPhoneAndBalanceDto =
                         new NumberPhoneAndBalanceDto(client.getPhoneNumber(), client.getBalance().toString());
                 numberPhoneAndBalanceDtos.add(numberPhoneAndBalanceDto);
             }
-//            resultBillingDtoList.setNumbers(numberPhoneAndBalanceDtos);
-            return numberPhoneAndBalanceDtos;
+            resultBillingDtoList.setNumbers(numberPhoneAndBalanceDtos);
+            return resultBillingDtoList;
         }
 
 
     @Override
-    @PostConstruct
+//    @PostConstruct
         public void sendToCrm(){
-        List<NumberPhoneAndBalanceDto> resultBillingDto = getResultBillingDto();
-        for (NumberPhoneAndBalanceDto numberPhoneAndBalanceDto : resultBillingDto){
-            kafkaNumberPhoneAndBalanceDtoTemplate.send("sendToCrmResultBillingDto", numberPhoneAndBalanceDto);
-        }
-//            kafkaResultBillingDtoTemplate.send("sendToCrmResultBillingDto", resultBillingDto);
+        ResultBillingDto resultBillingDto = getResultBillingDto();
+//        for (NumberPhoneAndBalanceDto numberPhoneAndBalanceDto : resultBillingDto){
+//            kafkaNumberPhoneAndBalanceDtoTemplate.send("sendToCrmResultBillingDto", numberPhoneAndBalanceDto);
+//        }
+            kafkaResultBillingDtoTemplate.send("sendToCrmResultBillingDto", resultBillingDto);
             log.info("Result sent to crm");
         }
 

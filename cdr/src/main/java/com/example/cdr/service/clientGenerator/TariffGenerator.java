@@ -1,7 +1,7 @@
 package com.example.cdr.service.clientGenerator;
 
-import com.example.commonthings.entity.Tariff;
-import com.example.commonthings.repository.TariffRepository;
+import com.example.common.entity.Tariff;
+import com.example.common.repository.TariffRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

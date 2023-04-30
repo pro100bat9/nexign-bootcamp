@@ -1,11 +1,9 @@
 package com.example.brt.service;
 
-import com.example.commonthings.service.ClientService;
+import com.example.common.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 @Service
 @RequiredArgsConstructor

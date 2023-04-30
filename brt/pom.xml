@@ -58,8 +58,9 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>common-things</artifactId>
+            <artifactId>common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

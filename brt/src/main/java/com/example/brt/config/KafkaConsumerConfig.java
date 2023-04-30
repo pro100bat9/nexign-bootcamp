@@ -1,6 +1,6 @@
 package com.example.brt.config;
 
-import com.example.commonthings.model.AbstractDto;
+import com.example.common.model.AbstractDto;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;

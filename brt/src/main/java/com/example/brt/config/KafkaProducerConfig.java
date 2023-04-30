@@ -1,9 +1,9 @@
 package com.example.brt.config;
 
-import com.example.commonthings.model.CdrDto;
-import com.example.commonthings.model.CdrPlusDto;
-import com.example.commonthings.model.NumberPhoneAndBalanceDto;
-import com.example.commonthings.model.ResultBillingDto;
+import com.example.common.model.CdrDto;
+import com.example.common.model.CdrPlusDto;
+import com.example.common.model.NumberPhoneAndBalanceDto;
+import com.example.common.model.ResultBillingDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongSerializer;

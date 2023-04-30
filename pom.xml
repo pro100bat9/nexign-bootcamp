@@ -23,7 +23,7 @@
     <module>cdr</module>
     <module>crm</module>
     <module>hrs</module>
-    <module>common-things</module>
+    <module>common</module>
 </modules>
     <dependencies>
         <dependency>

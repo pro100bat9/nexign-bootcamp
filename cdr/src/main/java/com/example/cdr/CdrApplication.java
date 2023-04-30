@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.kafka.annotation.EnableKafka;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.example.commonthings", "com.example.cdr"})
+@ComponentScan(basePackages = {"com.example.common", "com.example.cdr"})
 @EnableKafka
 public class CdrApplication {
 

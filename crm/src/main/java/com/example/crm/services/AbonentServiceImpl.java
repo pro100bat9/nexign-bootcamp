@@ -1,11 +1,11 @@
 package com.example.crm.services;
 
-import com.example.commonthings.entity.Client;
-import com.example.commonthings.entity.Tariff;
-import com.example.commonthings.model.*;
-import com.example.commonthings.service.ClientService;
-import com.example.commonthings.service.ManagerService;
-import com.example.commonthings.service.TariffService;
+import com.example.common.entity.Client;
+import com.example.common.entity.Tariff;
+import com.example.common.model.*;
+import com.example.common.service.ClientService;
+import com.example.common.service.ManagerService;
+import com.example.common.service.TariffService;
 import com.example.crm.exception.BillingException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

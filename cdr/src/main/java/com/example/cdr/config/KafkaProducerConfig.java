@@ -1,6 +1,6 @@
 package com.example.cdr.config;
 
-import com.example.commonthings.model.CdrDto;
+import com.example.common.model.CdrDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongSerializer;

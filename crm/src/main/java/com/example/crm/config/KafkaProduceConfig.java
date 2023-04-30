@@ -1,6 +1,5 @@
 package com.example.crm.config;
 
-import com.example.commonthings.entity.Call;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongSerializer;

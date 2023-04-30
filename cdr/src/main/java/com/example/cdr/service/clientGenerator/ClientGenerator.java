@@ -1,10 +1,10 @@
 package com.example.cdr.service.clientGenerator;
 
 import com.example.cdr.service.cdrGenerator.GeneratorCdrService;
-import com.example.commonthings.entity.Client;
-import com.example.commonthings.exception.ClientNotFoundException;
-import com.example.commonthings.model.CdrDto;
-import com.example.commonthings.repository.ClientRepository;
+import com.example.common.entity.Client;
+import com.example.common.exception.ClientNotFoundException;
+import com.example.common.model.CdrDto;
+import com.example.common.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

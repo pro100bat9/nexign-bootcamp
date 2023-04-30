@@ -1,13 +1,13 @@
 package com.example.brt.service;
 
-import com.example.commonthings.entity.Call;
-import com.example.commonthings.entity.Client;
-import com.example.commonthings.model.CdrPlusDto;
-import com.example.commonthings.model.CdrDto;
-import com.example.commonthings.model.NumberPhoneAndBalanceDto;
-import com.example.commonthings.model.ResultBillingDto;
-import com.example.commonthings.service.CallService;
-import com.example.commonthings.service.ClientService;
+import com.example.common.entity.Call;
+import com.example.common.entity.Client;
+import com.example.common.model.CdrPlusDto;
+import com.example.common.model.CdrDto;
+import com.example.common.model.NumberPhoneAndBalanceDto;
+import com.example.common.model.ResultBillingDto;
+import com.example.common.service.CallService;
+import com.example.common.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

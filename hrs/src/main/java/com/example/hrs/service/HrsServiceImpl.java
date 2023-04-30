@@ -1,10 +1,10 @@
 package com.example.hrs.service;
 
-import com.example.commonthings.entity.Call;
-import com.example.commonthings.entity.Client;
-import com.example.commonthings.model.CdrPlusDto;
-import com.example.commonthings.repository.ClientRepository;
-import com.example.commonthings.service.ClientService;
+import com.example.common.entity.Call;
+import com.example.common.entity.Client;
+import com.example.common.model.CdrPlusDto;
+import com.example.common.repository.ClientRepository;
+import com.example.common.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

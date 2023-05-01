@@ -1,4 +1,4 @@
-package com.example.crm.services;
+package com.example.crm.services.serviceImpl;
 
 import com.example.common.entity.Client;
 import com.example.common.entity.Tariff;
@@ -7,6 +7,7 @@ import com.example.common.service.ClientService;
 import com.example.common.service.ManagerService;
 import com.example.common.service.TariffService;
 import com.example.crm.exception.BillingException;
+import com.example.crm.services.AbonentService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

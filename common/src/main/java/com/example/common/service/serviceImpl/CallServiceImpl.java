@@ -1,9 +1,10 @@
-package com.example.common.service;
+package com.example.common.service.serviceImpl;
 
 import com.example.common.entity.Call;
 import com.example.common.exception.ClientNotFoundException;
 import com.example.common.repository.CallRepository;
 import com.example.common.repository.ClientRepository;
+import com.example.common.service.CallService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class CallServiceImpl implements CallService{
+public class CallServiceImpl implements CallService {
     private final CallRepository callRepository;
     private final ClientRepository clientRepository;
     @Override

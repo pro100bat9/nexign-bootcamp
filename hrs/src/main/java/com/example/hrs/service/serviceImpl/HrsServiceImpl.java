@@ -1,10 +1,11 @@
-package com.example.hrs.service;
+package com.example.hrs.service.serviceImpl;
 
 import com.example.common.entity.Call;
 import com.example.common.entity.Client;
 import com.example.common.model.CdrPlusDto;
 import com.example.common.repository.ClientRepository;
 import com.example.common.service.ClientService;
+import com.example.hrs.service.HrsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class HrsServiceImpl implements HrsService{
+public class HrsServiceImpl implements HrsService {
 
     private final ClientRepository clientRepository;
     private final KafkaTemplate<Long, Call> kafkaTemplate;

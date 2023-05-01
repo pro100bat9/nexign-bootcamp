@@ -1,4 +1,4 @@
-package com.example.common.service;
+package com.example.common.service.serviceImpl;
 
 import com.example.common.entity.Call;
 import com.example.common.entity.Client;
@@ -8,6 +8,9 @@ import com.example.common.exception.ClientNotFoundException;
 import com.example.common.model.CallsDetailsDto;
 import com.example.common.model.PaymentDto;
 import com.example.common.repository.ClientRepository;
+import com.example.common.service.CallService;
+import com.example.common.service.ClientService;
+import com.example.common.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ClientServiceImpl implements ClientService{
+public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
     private final CallService callService;
     private final PaymentService paymentService;

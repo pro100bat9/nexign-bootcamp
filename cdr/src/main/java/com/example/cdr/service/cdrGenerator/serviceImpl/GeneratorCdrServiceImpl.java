@@ -1,5 +1,7 @@
-package com.example.cdr.service.cdrGenerator;
+package com.example.cdr.service.cdrGenerator.serviceImpl;
 
+import com.example.cdr.service.cdrGenerator.CdrService;
+import com.example.cdr.service.cdrGenerator.GeneratorCdrService;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;

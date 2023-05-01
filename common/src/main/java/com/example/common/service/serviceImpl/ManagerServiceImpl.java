@@ -1,14 +1,17 @@
-package com.example.common.service;
+package com.example.common.service.serviceImpl;
 
 import com.example.common.entity.Client;
 import com.example.common.entity.Tariff;
 import com.example.common.model.ChangeTariffDto;
+import com.example.common.service.ClientService;
+import com.example.common.service.ManagerService;
+import com.example.common.service.TariffService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class ManagerServiceImpl implements ManagerService{
+public class ManagerServiceImpl implements ManagerService {
     private final ClientService clientService;
     private final TariffService tariffService;
 

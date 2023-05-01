@@ -2,7 +2,7 @@ package com.example.crm.controllers;
 
 import com.example.common.entity.Role;
 import com.example.common.service.UserService;
-import com.example.crm.services.AbonentServiceImpl;
+import com.example.crm.services.serviceImpl.AbonentServiceImpl;
 import com.example.crm.wrappers.request.AbonentPay;
 import com.example.crm.wrappers.response.AbonentPayResponse;
 import com.example.crm.wrappers.response.AbonentReport;

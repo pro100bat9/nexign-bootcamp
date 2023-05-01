@@ -48,6 +48,7 @@ public class ClientGenerator{
             else {
                 Users user = new Users(loginAndPasswordGenerator.generateRandomString(8), client.getPhoneNumber(),
                         loginAndPasswordGenerator.generateRandomString(8), Role.ABONENT);
+                userService.saveUser(user);
             }
             clientRepository.save(client);
         }

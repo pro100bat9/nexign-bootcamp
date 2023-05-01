@@ -44,7 +44,7 @@ public class GeneratorCdrServiceImpl implements GeneratorCdrService {
     @KafkaListener(id = "cdr", topics = {"createCdr"}, containerFactory = "batchFactory")
     @Override
     public void generateCdrTxt(){
-        File file = new File(String.format("Cdr-files/%s.txt", filename));
+        File file = new File(filename);
         StringBuilder builder = new StringBuilder();
             try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file))){
                 for(int i = 0; amountPhone >= i; i++){
@@ -55,9 +55,7 @@ public class GeneratorCdrServiceImpl implements GeneratorCdrService {
             catch (IOException ex){
                 ex.getStackTrace();
             }
-
-//            String message = "message in brt";
-        log.info("message");
+            log.info("message");
         cdrService.SendToBrt();
     }
 

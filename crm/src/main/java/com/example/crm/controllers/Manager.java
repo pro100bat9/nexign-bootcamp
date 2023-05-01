@@ -9,6 +9,7 @@ import com.example.crm.wrappers.request.CreateAbonent;
 import com.example.crm.wrappers.response.AbonentChangeTariffResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController()

@@ -14,15 +14,13 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AbonentServiceImpl implements AbonentService{
+public class AbonentServiceImpl implements AbonentService {
     private final KafkaTemplate<Long, String> kafkaTemplate;
     private final ClientService clientService;
     private final ManagerService managerService;
@@ -63,21 +61,27 @@ public class AbonentServiceImpl implements AbonentService{
     @SneakyThrows
     @Override
     public ResultBillingDto billing(String message){
-        try {
+
+        if(resultBillingDtos.getNumbers() != null){
             resultBillingDtos.getNumbers().clear();
         }
-        catch (NullPointerException ex){
-            ex.printStackTrace();
-        }
+//        try {
+//            resultBillingDtos.getNumbers().clear();
+//        }
+//        catch (NullPointerException ex){
+//            ex.printStackTrace();
+//        }
+
+//        20 секунд не хватит, поэтому выведет NULL, но если запустить еще раз то выведет, то что успело обработаться
         if(message.equals("run")) {
             String message1 = "billing started";
             kafkaTemplate.send("sendToBrtBilling", message1);
             log.info("send to brt");
 
             try {
-                Thread.sleep(1000000);
-            } catch (Exception e) {
-                System.out.println(e);
+                Thread.sleep(20000);
+            } catch (Exception ex) {
+                System.out.println(ex);
             }
         }
         if(resultBillingDtos == null){

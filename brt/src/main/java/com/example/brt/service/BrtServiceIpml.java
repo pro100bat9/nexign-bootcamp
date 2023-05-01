@@ -39,8 +39,6 @@ public class BrtServiceIpml implements BrtService{
     private final KafkaTemplate<Long, CdrDto> kafkaCdrDtoTemplate;
     private final CallService callService;
     private final KafkaTemplate<Long, ResultBillingDto> kafkaResultBillingDtoTemplate;
-    private final KafkaTemplate<Long, NumberPhoneAndBalanceDto> kafkaNumberPhoneAndBalanceDtoTemplate;
-
 
 
         @Override
@@ -103,7 +101,7 @@ public class BrtServiceIpml implements BrtService{
     public void convertToDto() throws FileNotFoundException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         List<CdrDto> cdrDtoList = new ArrayList<>();
-        File file = new File(String.format("Cdr-files/%s.txt", filename));
+        File file = new File(filename);
         if(!file.exists()){
             throw new FileNotFoundException("File " + file.getAbsolutePath() + " does not exist");
         }

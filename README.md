@@ -1,7 +1,5 @@
 # nexign-bootcamp
 
-Выполнил: Дорошенко Семен 
-
 ## ссылка на dockerhub
     https://hub.docker.com/u/pro100bat9
 

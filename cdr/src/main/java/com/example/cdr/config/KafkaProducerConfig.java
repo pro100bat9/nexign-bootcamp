@@ -1,6 +1,6 @@
 package com.example.cdr.config;
 
-import com.example.commonthings.model.CdrDto;
+import com.example.common.model.CdrDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongSerializer;
@@ -56,6 +56,18 @@ public class KafkaProducerConfig {
     @Bean
     public KafkaTemplate<Long, String> kafkaStringTemplate() {
         KafkaTemplate<Long, String> template = new KafkaTemplate<>(producerStringFactory());
+        template.setMessageConverter(new StringJsonMessageConverter());
+        return template;
+    }
+
+    @Bean
+    public ProducerFactory<Long, List<CdrDto>> producerCdrDtoFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
+    public KafkaTemplate<Long, List<CdrDto>> producerCdrDtoTemplate() {
+        KafkaTemplate<Long, List<CdrDto>> template = new KafkaTemplate<>(producerCdrDtoFactory());
         template.setMessageConverter(new StringJsonMessageConverter());
         return template;
     }

@@ -1,10 +1,7 @@
 package com.example.crm.services;
 
-import com.example.commonthings.entity.Client;
-import com.example.commonthings.model.CallsDetailsDto;
-import com.example.commonthings.model.ChangeTariffDto;
-import com.example.commonthings.model.PaymentDto;
-import com.example.commonthings.model.ResultBillingDto;
+import com.example.common.entity.Client;
+import com.example.common.model.*;
 
 public interface AbonentService {
     PaymentDto pay(String phoneNumber, String money);

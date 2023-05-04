@@ -1,8 +1,9 @@
 package com.example.brt.config;
 
-import com.example.commonthings.model.CdrDto;
-import com.example.commonthings.model.CdrPlusDto;
-import com.example.commonthings.model.ResultBillingDto;
+import com.example.common.model.CdrDto;
+import com.example.common.model.CdrPlusDto;
+import com.example.common.model.NumberPhoneAndBalanceDto;
+import com.example.common.model.ResultBillingDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongSerializer;
@@ -63,6 +64,30 @@ public class KafkaProducerConfig {
     }
 
     @Bean
+    public ProducerFactory<Long, List<CdrDto>> producerCdrDtoFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
+    public KafkaTemplate<Long, NumberPhoneAndBalanceDto> producerNumberPhoneAndBalanceDtoTemplate() {
+        KafkaTemplate<Long, NumberPhoneAndBalanceDto> template = new KafkaTemplate<>(producerNumberPhoneAndBalanceDtoFactory());
+        template.setMessageConverter(new StringJsonMessageConverter());
+        return template;
+    }
+
+    @Bean
+    public ProducerFactory<Long, NumberPhoneAndBalanceDto> producerNumberPhoneAndBalanceDtoFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
+    public KafkaTemplate<Long, List<CdrDto>> producerCdrDtoTemplate() {
+        KafkaTemplate<Long, List<CdrDto>> template = new KafkaTemplate<>(producerCdrDtoFactory());
+        template.setMessageConverter(new StringJsonMessageConverter());
+        return template;
+    }
+
+    @Bean
     public ProducerFactory<Long, String> producerStringFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
@@ -108,6 +133,15 @@ public class KafkaProducerConfig {
     public NewTopic topic2() {
         return TopicBuilder
                 .name("sendToCrmResultBillingDto")
+                .partitions(5)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic topic3() {
+        return TopicBuilder
+                .name("generateClientInDB")
                 .partitions(5)
                 .replicas(1)
                 .build();

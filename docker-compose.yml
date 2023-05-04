@@ -3,24 +3,155 @@ version: "3.9"
 services:
   zookeeper:
     image: zookeeper:3.7.0
-    container_name: zookeeper
+    container_name: nexign_zookeeper
     restart: on-failure
     ports:
-      - "2181:2181"
+      - 2181:2181
+    networks:
+      - nexign_network
 
   kafka:
     image: obsidiandynamics/kafka
-    container_name: kafka
+    container_name: nexign_kafka
     restart: on-failure
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     ports:
       - "9092:9092"
     environment:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: DOCKER_INTERNAL:PLAINTEXT,DOCKER_EXTERNAL:PLAINTEXT
       KAFKA_LISTENERS: DOCKER_INTERNAL://:29092,DOCKER_EXTERNAL://:9092
-      KAFKA_ADVERTISED_LISTENERS: DOCKER_INTERNAL://kafka:29092,DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
+      KAFKA_ADVERTISED_LISTENERS: DOCKER_INTERNAL://kafka:29092,DOCKER_EXTERNAL://kafka:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER_INTERNAL
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_BROKER_ID: 1
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
+    networks:
+      - nexign_network
+
+  postgres:
+    image: postgres:14
+    container_name: nexign_postgres
+    restart: on-failure
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nexign
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres_data_db:/var/lib/postgresql/data
+    networks:
+      - nexign_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  brt:
+    image: pro100bat9/nexign_brt
+    container_name: nexign_brt
+    restart: on-failure
+    build:
+      context: ./brt
+      dockerfile: Dockerfile
+    ports:
+      - ${SERVER_PORT_BRT}:${SERVER_PORT_BRT}
+    environment:
+      SERVER_PORT: ${SERVER_PORT_BRT}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      KAFKA_SERVER: ${KAFKA_SERVER}
+    volumes:
+      - ./cdr-files/:/app/cdr-files/
+    depends_on:
+      - kafka
+      - postgres
+      - cdr
+      - hrs
+    networks:
+      - nexign_network
+
+  cdr:
+    image: pro100bat9/nexign_cdr
+    container_name: nexign_cdr
+    restart: on-failure
+    build:
+      context: ./cdr
+      dockerfile: Dockerfile
+    ports:
+      - ${SERVER_PORT_CDR}:${SERVER_PORT_CDR}
+    environment:
+      SERVER_PORT: ${SERVER_PORT_CDR}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      KAFKA_SERVER: ${KAFKA_SERVER}
+    volumes:
+      - ./cdr-files/:/app/cdr-files/
+    depends_on:
+      - kafka
+      - postgres
+    networks:
+      - nexign_network
+
+  crm:
+    image: pro100bat9/nexign_crm
+    container_name: nexign_crm
+    restart: on-failure
+    build:
+      context: ./crm
+      dockerfile: Dockerfile
+    ports:
+      - ${SERVER_PORT_CRM}:${SERVER_PORT_CRM}
+    environment:
+      SERVER_PORT: ${SERVER_PORT_CRM}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      KAFKA_SERVER: ${KAFKA_SERVER}
+    depends_on:
+      - kafka
+      - postgres
+      - cdr
+      - hrs
+      - brt
+    networks:
+      - nexign_network
+
+  hrs:
+    image: pro100bat9/nexign_hrs
+    container_name: nexign_hrs
+    restart: on-failure
+    build:
+      context: ./hrs
+      dockerfile: Dockerfile
+    ports:
+      - ${SERVER_PORT_HRS}:${SERVER_PORT_HRS}
+    environment:
+      SERVER_PORT: ${SERVER_PORT_HRS}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      KAFKA_SERVER: ${KAFKA_SERVER}
+    depends_on:
+      - kafka
+      - postgres
+      - cdr
+    networks:
+      - nexign_network
+
+
+volumes:
+  postgres_data_db:
+    name: postgres_data_db
+
+networks:
+  nexign_network:
+    name: ${NETWORK_NAME}

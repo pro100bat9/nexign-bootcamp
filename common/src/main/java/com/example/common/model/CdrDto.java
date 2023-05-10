@@ -2,10 +2,11 @@ package com.example.common.model;
 
 
 import lombok.Getter;
+import lombok.ToString;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
+@ToString
 @Getter
 @NoArgsConstructor
 public class CdrDto {

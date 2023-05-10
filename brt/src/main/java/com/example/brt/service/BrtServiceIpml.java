@@ -28,7 +28,7 @@ import java.util.Scanner;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class BrtServiceIpml implements BrtService{
+public class BrtServiceIpml implements BrtService {
 
     @Value("${generator.options.directoryPath}")
     private String filename;
@@ -39,6 +39,17 @@ public class BrtServiceIpml implements BrtService{
     private final KafkaTemplate<Long, CdrDto> kafkaCdrDtoTemplate;
     private final CallService callService;
     private final KafkaTemplate<Long, ResultBillingDto> kafkaResultBillingDtoTemplate;
+
+    @KafkaListener(topics = {"sendCallToBrt"}, groupId = "brt-service", containerFactory = "singleFactory")
+    public void calculateBalance(Call call) {
+        System.out.println("ASBKASGHIASASJHk");
+        Client client = clientService.findClientByPhoneNumber(call.getPhoneNumber());
+        BigDecimal balance = client.getBalance().subtract(call.getCost());
+        client.setBalance(balance);
+        clientService.updateClient(client);
+        callService.createCall(call);
+        sendToCrm();
+    }
 
 
         @Override
@@ -106,7 +117,7 @@ public class BrtServiceIpml implements BrtService{
             throw new FileNotFoundException("File " + file.getAbsolutePath() + " does not exist");
         }
         Scanner scanner = new Scanner(file);
-        while (scanner.hasNext()){
+        while (scanner.hasNext()) {
             String nextLine = scanner.nextLine();
             String[] cdrFromFile = nextLine.split(",");
             LocalDateTime startTime = LocalDateTime.parse(cdrFromFile[2], formatter);
@@ -119,6 +130,7 @@ public class BrtServiceIpml implements BrtService{
         }
         authorizeClient(cdrDtoList);
     }
+
 
     @KafkaListener(id = "brtThird", topics = {"sendToBrtBilling"}, containerFactory = "singleFactory")
     @Override
@@ -135,6 +147,24 @@ public class BrtServiceIpml implements BrtService{
                 }
             }
             return false;
+    }
 
+    public void sendToCrm() {
+        ResultBillingDto resultBillingDto = getResultBillingDto();
+        kafkaResultBillingDtoTemplate.send("sendToCrmResultBillingDto", resultBillingDto);
+        log.info("Result sent to crm");
+    }
+
+
+    public void sendMessageToCdr() {
+        String message = "request to create cdr file received";
+        kafkaStringTemplate.send("createCdr", message);
+    }
+
+    public String typeCall(String code) {
+        if (code.equals("01")) {
+            return "Outcome";
+        }
+        return "Income";
     }
 }

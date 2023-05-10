@@ -4,8 +4,9 @@ import com.example.common.entity.Payment;
 import com.example.common.repository.PaymentRepository;
 import com.example.common.service.PaymentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 @Service
 public class PaymentServiceImpl implements PaymentService {

@@ -66,21 +66,14 @@ public class AbonentServiceImpl implements AbonentService {
         if(resultBillingDtos.getNumbers() != null){
             resultBillingDtos.getNumbers().clear();
         }
-//        try {
-//            resultBillingDtos.getNumbers().clear();
-//        }
-//        catch (NullPointerException ex){
-//            ex.printStackTrace();
-//        }
 
-//        20 секунд не хватит, поэтому выведет NULL, но если запустить еще раз то выведет, то что успело обработаться
         if(message.equals("run")) {
             String message1 = "billing started";
             kafkaTemplate.send("sendToBrtBilling", message1);
             log.info("send to brt");
 
             try {
-                Thread.sleep(20000);
+                Thread.sleep(90000);
             } catch (Exception ex) {
                 System.out.println(ex);
             }

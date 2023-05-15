@@ -30,12 +30,33 @@
 на эндпоитнте billing стоит таймаут на 20 секунд, лучше запустить еще раз, 
 потому что 20 секунд не хватит и выведется NULL
 
+Endpoint для регистрации пользователя:
 
-Команда для проверки эндпойнта billing:
+    http://localhost:8080/register
 
-    curl -X PATCH -H "Content-Type: application/json" -d '{"action" : "run"}' http://localhost:8080/manager/billing
+Method:
 
-Endpoint: 
+    POST
+
+Request body:
+
+    {
+    "password" : "fiewfwip",
+    "login" : "your_email@gmail.com",
+    "numberPhone" : "79129196530",
+    "role" : "MANAGER"
+    }
+
+Endpoint для входа пользователя:
+
+    http://localhost:8080/login?username=your_email@gmail.com&password=fiewfwip
+
+Method:
+
+    POST
+
+
+Endpoint billing : 
 
     http://localhost:8080/manager/billing
  
@@ -65,11 +86,9 @@ Response body:
             ...
         ]
     }
-Команда для проверки эндпойнта createAbonent:
 
-    curl -X POST -H "Content-Type: application/json" -d '{ "numberPhone" : "7123123126", "tariff_id" : "06",  "balance" : "400"}' http://localhost:8080/manager/createAbonent
 
-Endpoint:
+Endpoint createAbonent:
 
     http://localhost:8080/manager/createAbonent
 
@@ -93,11 +112,8 @@ Response body:
     "balance": "400"
     }
 
-Команда для проверки эндпойнта changeTariff:
-    
-    curl -X PATCH -H "Content-Type: application/json" -d '{"numberPhone" : "7123123123","tariff_id" : "03"}' http://localhost:8080/manager/changeTariff
 
-Endpoint:
+Endpoint changeTariff:
 
     http://localhost:8080/manager/changeTariff
 
@@ -119,10 +135,6 @@ Response body:
     "numberPhone": "7123123125",
     "tariff_id": "03"
     }
-
-Команда для проверки эндпойнта changeTariff:
-
-    curl -X PATCH -H "Content-Type: application/json" -d '{"numberPhone" : "79129196442", "money" : "1000"}' http://localhost:8080/abonent/pay
 
 Endpoint:
 
@@ -147,11 +159,7 @@ Response body:
     "money": "800.00"
     }
 
-Команда для проверки эндпойнта report:
-
-    curl http://localhost:8080/abonent/report/79129196442
-
-Endpoint:
+Endpoint report:
 
     http://localhost:8080/abonent/report/79129196442
 
@@ -183,6 +191,29 @@ Response body:
     ]
     }
 
+Команда для регистрации пользователя:
+
+    curl -X POST -H "Content-Type: application/json" -d '{"password" : "fiewfwip", "login" : "your_email@gmail.com", "numberPhone" : "79129196539", "role" : "MANAGER"}' http://localhost:8080/register
+
+Команда для входа пользователя:
+
+    curl -X POST -d "username=your_email@gmail.com&password=fiewfwip" http://localhost:8080/login
+
+Команда для проверки эндпойнта billing:
+
+    curl -X PATCH -H "Content-Type: application/json" -d '{"action" : "run"}' http://localhost:8080/manager/billing
+
+Команда для проверки эндпойнта createAbonent:
+
+    curl -X POST -H "Content-Type: application/json" -d '{ "numberPhone" : "7123123126", "tariff_id" : "06",  "balance" : "400"}' http://localhost:8080/manager/createAbonent
+
+Команда для проверки эндпойнта changeTariff:
+
+    curl -X PATCH -H "Content-Type: application/json" -d '{"numberPhone" : "7123123123","tariff_id" : "03"}' http://localhost:8080/manager/changeTariff
+
+Команда для проверки эндпойнта report:
+
+    curl http://localhost:8080/abonent/report/79129196442
 
 ##
 

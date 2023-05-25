@@ -41,13 +41,13 @@ public class ClientGenerator{
                     .build();
             if(countManager != 0){
                 Users user = new Users(loginAndPasswordGenerator.generateRandomString(8), client.getPhoneNumber(),
-                        loginAndPasswordGenerator.generateRandomString(8), Role.MANAGER);
+                        loginAndPasswordGenerator.generateRandomString(8), Role.ROLE_MANAGER);
                 countManager--;
                 userService.saveUser(user);
             }
             else {
                 Users user = new Users(loginAndPasswordGenerator.generateRandomString(8), client.getPhoneNumber(),
-                        loginAndPasswordGenerator.generateRandomString(8), Role.ABONENT);
+                        loginAndPasswordGenerator.generateRandomString(8), Role.ROLE_ABONENT);
                 userService.saveUser(user);
             }
             clientRepository.save(client);

@@ -39,7 +39,7 @@ public class Abonent {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         var client = abonentService.getClient(numberPhone);
         var user = userService.getUserByLogin(authentication.getName());
-        if(!user.getPhoneNumber().equals(client.getNumberPhone()) && user.getRole() != Role.MANAGER){
+        if(!user.getPhoneNumber().equals(client.getNumberPhone()) && user.getRole() != Role.ROLE_MANAGER){
             return new ResponseEntity<>("you can't see calls from other customers", HttpStatus.FORBIDDEN);
         }
         var calls = client.getPayload();

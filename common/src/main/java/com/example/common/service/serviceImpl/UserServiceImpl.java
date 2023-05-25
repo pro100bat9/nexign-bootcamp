@@ -14,12 +14,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     @Override
     public Users getUserByLogin(String login){
-        return userRepository.findUsersByLogin(login);
+        return userRepository.findUsersByLogin(login)
+                .orElseThrow(() -> new UsernameNotFoundException("User with this login not found" + login));
     }
 
     @Override
@@ -30,17 +31,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepository.save(user);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users user = userRepository.findUsersByLogin(username);
-        if(user == null){
-            throw new UsernameNotFoundException("user not found:"+username);
-        }
-        UserDetails userDetails = User.builder()
-                .username(user.getLogin())
-                .password(user.getPassword())
-                .roles("ABONENT")
-                .build();
-        return userDetails;
-    }
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        Users user = userRepository.findUsersByLogin(username)
+//                .orElseThrow(() -> new UsernameNotFoundException("User with this login not found" + username));
+//        if(user == null){
+//            throw new UsernameNotFoundException("user not found:"+username);
+//        }
+//        UserDetails userDetails = User.builder()
+//                .username(user.getLogin())
+//                .password(user.getPassword())
+//                .roles("ABONENT")
+//                .build();
+//        return userDetails;
+//    }
 }

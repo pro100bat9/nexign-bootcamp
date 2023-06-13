@@ -6,6 +6,7 @@ import com.example.common.model.*;
 import com.example.common.service.ClientService;
 import com.example.common.service.ManagerService;
 import com.example.common.service.TariffService;
+import com.example.common.tools.KafkaTemplateTool;
 import com.example.crm.exception.BillingException;
 import com.example.crm.services.AbonentService;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +23,12 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 @Slf4j
 public class AbonentServiceImpl implements AbonentService {
-    private final KafkaTemplate<Long, String> kafkaTemplate;
+//    private final KafkaTemplate<Long, String> kafkaTemplate;
     private final ClientService clientService;
     private final ManagerService managerService;
     private final TariffService tariffService;
     private ResultBillingDto resultBillingDtos = new ResultBillingDto();
+    private final KafkaTemplateTool kafkaTemplateTool;
 
     @Override
     public PaymentDto pay(String phoneNumber, String money) {
@@ -69,7 +71,8 @@ public class AbonentServiceImpl implements AbonentService {
 
         if(message.equals("run")) {
             String message1 = "billing started";
-            kafkaTemplate.send("sendToBrtBilling", message1);
+            kafkaTemplateTool.getKafkaStringTemplate().send("sendToBrtBilling", message1);
+//            kafkaTemplate.send("sendToBrtBilling", message1);
             log.info("send to brt");
 
             try {

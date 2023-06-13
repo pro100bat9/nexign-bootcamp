@@ -8,6 +8,7 @@ import com.example.common.model.NumberPhoneAndBalanceDto;
 import com.example.common.model.ResultBillingDto;
 import com.example.common.service.CallService;
 import com.example.common.service.ClientService;
+import com.example.common.tools.KafkaTemplateTool;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,11 +35,12 @@ public class BrtServiceIpml implements BrtService{
     private String filename;
 
     private final ClientService clientService;
-    private final KafkaTemplate<Long, String> kafkaStringTemplate;
-    private final KafkaTemplate<Long, CdrPlusDto> kafkaListCdrPlusTemplate;
-    private final KafkaTemplate<Long, CdrDto> kafkaCdrDtoTemplate;
+//    private final KafkaTemplate<Long, String> kafkaStringTemplate;
+//    private final KafkaTemplate<Long, CdrPlusDto> kafkaListCdrPlusTemplate;
+//    private final KafkaTemplate<Long, CdrDto> kafkaCdrDtoTemplate;
     private final CallService callService;
-    private final KafkaTemplate<Long, ResultBillingDto> kafkaResultBillingDtoTemplate;
+//    private final KafkaTemplate<Long, ResultBillingDto> kafkaResultBillingDtoTemplate;
+    private final KafkaTemplateTool kafkaTemplateTool;
 
 
         @Override
@@ -53,12 +55,13 @@ public class BrtServiceIpml implements BrtService{
             }
             log.info("prepair for send to hrs");
             for(CdrPlusDto cdrPlusDto: cdrPlusDtos){
-                kafkaListCdrPlusTemplate.send("sendToHrs", cdrPlusDto);
+                kafkaTemplateTool.getProducerCdrPlusDtoTemplate().send("sendToHrs", cdrPlusDto);
+//                kafkaListCdrPlusTemplate.send("sendToHrs", cdrPlusDto);
             }
         }
 
         @Override
-    @KafkaListener(id = "brt", topics = {"sendCallToBrt"}, containerFactory = "singleFactory")
+        @KafkaListener(id = "brt", topics = {"sendCallToBrt"}, containerFactory = "singleFactory")
         public void calculateBalance(Call call){
             Client client = clientService.findClientByPhoneNumber(call.getPhoneNumber());
             BigDecimal balance = client.getBalance().subtract(call.getCost());
@@ -85,15 +88,17 @@ public class BrtServiceIpml implements BrtService{
 
 
     @Override
-        public void sendToCrm(){
-        ResultBillingDto resultBillingDto = getResultBillingDto();
-            kafkaResultBillingDtoTemplate.send("sendToCrmResultBillingDto", resultBillingDto);
+    public void sendToCrm(){
+            ResultBillingDto resultBillingDto = getResultBillingDto();
+            kafkaTemplateTool.getKafkaResultBillingDtoTemplate().send("sendToCrmResultBillingDto", resultBillingDto);
+//            kafkaResultBillingDtoTemplate.send("sendToCrmResultBillingDto", resultBillingDto);
             log.info("Result sent to crm");
         }
 
     @Override
         public void sendMessageToCdr(String message){
-            kafkaStringTemplate.send("createCdr", message);
+            kafkaTemplateTool.getKafkaStringTemplate().send("createCdr", message);
+//            kafkaStringTemplate.send("createCdr", message);
         }
 
     @KafkaListener(id = "brtSecond", topics = {"sendToBrt"}, containerFactory = "singleFactory")
@@ -113,7 +118,8 @@ public class BrtServiceIpml implements BrtService{
             LocalDateTime endTime = LocalDateTime.parse(cdrFromFile[3], formatter);
             CdrDto cdrDto = new CdrDto(cdrFromFile[1], startTime, endTime, cdrFromFile[0]);
             if(!checkPhoneNumber(cdrDtoList, cdrDto.getPhoneNumber())) {
-                kafkaCdrDtoTemplate.send("generateClientInDB", cdrDto);
+                kafkaTemplateTool.getKafkaCdrDtoTemplate().send("generateClientInDB", cdrDto);
+//                kafkaCdrDtoTemplate.send("generateClientInDB", cdrDto);
             }
             cdrDtoList.add(cdrDto);
         }

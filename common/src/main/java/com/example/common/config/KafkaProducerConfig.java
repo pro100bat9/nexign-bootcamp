@@ -1,8 +1,8 @@
-package com.example.brt.config;
+package com.example.common.config;
 
+import com.example.common.entity.Call;
 import com.example.common.model.CdrDto;
 import com.example.common.model.CdrPlusDto;
-import com.example.common.model.NumberPhoneAndBalanceDto;
 import com.example.common.model.ResultBillingDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -64,25 +64,13 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<Long, List<CdrDto>> producerCdrDtoFactory() {
+    public ProducerFactory<Long, ResultBillingDto> producerResultBillingDtoFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
-    public KafkaTemplate<Long, NumberPhoneAndBalanceDto> producerNumberPhoneAndBalanceDtoTemplate() {
-        KafkaTemplate<Long, NumberPhoneAndBalanceDto> template = new KafkaTemplate<>(producerNumberPhoneAndBalanceDtoFactory());
-        template.setMessageConverter(new StringJsonMessageConverter());
-        return template;
-    }
-
-    @Bean
-    public ProducerFactory<Long, NumberPhoneAndBalanceDto> producerNumberPhoneAndBalanceDtoFactory() {
-        return new DefaultKafkaProducerFactory<>(producerConfigs());
-    }
-
-    @Bean
-    public KafkaTemplate<Long, List<CdrDto>> producerCdrDtoTemplate() {
-        KafkaTemplate<Long, List<CdrDto>> template = new KafkaTemplate<>(producerCdrDtoFactory());
+    public KafkaTemplate<Long, ResultBillingDto> kafkaResultBillingDtoTemplate() {
+        KafkaTemplate<Long, ResultBillingDto> template = new KafkaTemplate<>(producerResultBillingDtoFactory());
         template.setMessageConverter(new StringJsonMessageConverter());
         return template;
     }
@@ -100,21 +88,22 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<Long, ResultBillingDto> producerResultBillingDtoFactory() {
+    public ProducerFactory<Long, Call> producerCallFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
-    public KafkaTemplate<Long, ResultBillingDto> kafkaResultBillingDtoTemplate() {
-        KafkaTemplate<Long, ResultBillingDto> template = new KafkaTemplate<>(producerResultBillingDtoFactory());
+    public KafkaTemplate<Long, Call> kafkaCallTemplate() {
+        KafkaTemplate<Long, Call> template = new KafkaTemplate<>(producerCallFactory());
         template.setMessageConverter(new StringJsonMessageConverter());
         return template;
     }
 
+
     @Bean
     public NewTopic topic() {
         return TopicBuilder
-                .name("createCdr")
+                .name("sendToBrt")
                 .partitions(5)
                 .replicas(1)
                 .build();
@@ -123,7 +112,7 @@ public class KafkaProducerConfig {
     @Bean
     public NewTopic topic1() {
         return TopicBuilder
-                .name("sendToHrs")
+                .name("createCdr")
                 .partitions(5)
                 .replicas(1)
                 .build();
@@ -132,7 +121,7 @@ public class KafkaProducerConfig {
     @Bean
     public NewTopic topic2() {
         return TopicBuilder
-                .name("sendToCrmResultBillingDto")
+                .name("sendToHrs")
                 .partitions(5)
                 .replicas(1)
                 .build();
@@ -141,9 +130,38 @@ public class KafkaProducerConfig {
     @Bean
     public NewTopic topic3() {
         return TopicBuilder
+                .name("sendToCrmResultBillingDto")
+                .partitions(5)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic topic4() {
+        return TopicBuilder
                 .name("generateClientInDB")
                 .partitions(5)
                 .replicas(1)
                 .build();
     }
+
+    @Bean
+    public NewTopic topic5() {
+        return TopicBuilder
+                .name("sendToBrtBilling")
+                .partitions(5)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic topic6() {
+        return TopicBuilder
+                .name("sendCallToBrt")
+                .partitions(5)
+                .replicas(1)
+                .build();
+    }
+
 }
+

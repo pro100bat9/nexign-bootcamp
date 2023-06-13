@@ -1,4 +1,4 @@
-package com.example.brt.config;
+package com.example.common.config;
 
 import com.example.common.model.AbstractDto;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -71,3 +71,4 @@ public class KafkaConsumerConfig {
         return new StringJsonMessageConverter();
     }
 }
+

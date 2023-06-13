@@ -5,6 +5,7 @@ import com.example.common.entity.Client;
 import com.example.common.model.CdrPlusDto;
 import com.example.common.repository.ClientRepository;
 import com.example.common.service.ClientService;
+import com.example.common.tools.KafkaTemplateTool;
 import com.example.hrs.service.HrsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +24,9 @@ import java.time.LocalDateTime;
 public class HrsServiceImpl implements HrsService {
 
     private final ClientRepository clientRepository;
-    private final KafkaTemplate<Long, Call> kafkaTemplate;
+//    private final KafkaTemplate<Long, Call> kafkaTemplate;
     private final ClientService clientService;
+    private final KafkaTemplateTool kafkaTemplateTool;
 
     @KafkaListener(id = "hrs", topics = {"sendToHrs"}, containerFactory = "singleFactory")
     public void calculationBalance(CdrPlusDto cdrPlusDto){
@@ -38,7 +40,8 @@ public class HrsServiceImpl implements HrsService {
 
     public void sendToBrt(Call call){
         log.info("tariff calculated");
-        kafkaTemplate.send("sendCallToBrt", call);
+//        kafkaTemplate.send("sendCallToBrt", call);
+        kafkaTemplateTool.getKafkaCallTemplate().send("sendCallToBrt", call);
     }
 
     public BigDecimal calculateCost(CdrPlusDto cdrPlusDto, double duration){

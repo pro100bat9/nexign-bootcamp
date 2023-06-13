@@ -12,6 +12,8 @@ import com.example.common.service.CallService;
 import com.example.common.service.ClientService;
 import com.example.common.service.PaymentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,6 +27,7 @@ public class ClientServiceImpl implements ClientService {
     private final PaymentService paymentService;
 
     @Override
+    @CachePut(cacheNames = "client", key = "#client.phoneNumber")
     public Client createClient(Client client) {
         if(clientRepository.findClientByPhoneNumber(client.getPhoneNumber()).isPresent()){
             throw new ClientAlreadyExistException("Client with number phone " + client.getPhoneNumber() + " already exist");
@@ -33,6 +36,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @CachePut(cacheNames = "client", key = "#client.phoneNumber")
     public Client updateClient(Client client) {
         if(clientRepository.findClientByPhoneNumber(client.getPhoneNumber()).isEmpty()){
             throw  new ClientNotFoundException("Client with phone number " + client.getPhoneNumber() + " not found");
@@ -47,6 +51,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @CachePut(cacheNames = "client", key = "#payBalanceDto.phoneNumber")
     public PaymentDto replenishmentOfTheBalance(PaymentDto payBalanceDto) {
         var client = clientRepository.findClientByPhoneNumber(payBalanceDto.getPhoneNumber())
                 .orElseThrow(() ->
@@ -63,6 +68,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Cacheable(cacheNames = "client")
     public CallsDetailsDto getDetailsCalls(String phoneNumber) {
         var client = clientRepository.findClientByPhoneNumber(phoneNumber).orElseThrow(
                 () -> new ClientNotFoundException("Client with phone number " + phoneNumber + " not found"));

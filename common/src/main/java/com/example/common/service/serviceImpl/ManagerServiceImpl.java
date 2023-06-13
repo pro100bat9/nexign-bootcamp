@@ -7,6 +7,7 @@ import com.example.common.service.ClientService;
 import com.example.common.service.ManagerService;
 import com.example.common.service.TariffService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class ManagerServiceImpl implements ManagerService {
 
 
     @Override
+    @CachePut(cacheNames = "client", key = "#changeTariffDto.numberPhone")
     public ChangeTariffDto changeClientTariff(ChangeTariffDto changeTariffDto) {
         var client = clientService.findClientByPhoneNumber(changeTariffDto.getNumberPhone());
         Tariff tariff = tariffService.findByIndex(changeTariffDto.getTariffId());
